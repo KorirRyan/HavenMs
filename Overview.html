@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HavenMS — Hostel Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel = "StyleSheet" href = "Overview.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo">Haven<span>MS</span></div>
+    <div class="tagline">Hostel Management</div>
+  </div>
+  <div id="sidebar-nav"></div>
+  <div class="sidebar-footer">
+    <div class="user-badge">
+      <div class="user-avatar" id="user-avatar-text">?</div>
+      <div class="user-info">
+        <div class="name" id="sidebar-name">Guest</div>
+        <div class="role" id="sidebar-role">—</div>
+      </div>
+    </div>
+    HavenMS v1.0 · 2025
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-actions">
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" placeholder="Search students, rooms...">
+      </div>
+      <div style="width:1px;height:24px;background:var(--border)"></div>
+      <button class="btn btn-ghost btn-sm">🔔</button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('quick-action-modal')">+ Quick Action</button>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()" title="Sign out" style="color:var(--danger);border-color:var(--danger)">⏻ Logout</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ──────────────── DASHBOARD ──────────────── -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="stat-label">Total Students</div>
+          <div class="stat-value" id="stat-students">0</div>
+          <div class="stat-sub">Registered</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Occupied Rooms</div>
+          <div class="stat-value" id="stat-occupied">0</div>
+          <div class="stat-sub">of <span id="stat-total-rooms">0</span> total</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-label">Pending Payments</div>
+          <div class="stat-value" id="stat-pending-pay">0</div>
+          <div class="stat-sub">Awaiting verification</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Pending Apps</div>
+          <div class="stat-value" id="stat-pending-apps">0</div>
+          <div class="stat-sub">To be processed</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Hostel Occupancy</span>
+          </div>
+          <div class="panel-body" id="hostel-occupancy-panel">
+            <!-- filled by JS -->
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Recent Activity</span>
+          </div>
+          <div class="panel-body" id="activity-feed">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Recent Allocations</span>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('allocations')">View all →</button>
+        </div>
+        <div class="panel-body" style="padding:0">
+          <table class="data-table" id="dash-alloc-table">
+            <thead>
+              <tr>
+                <th>Student</th><th>Room</th><th>Hostel</th><th>Date</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="dash-alloc-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────────────── STUDENTS ──────────────── -->
+    <div class="page" id="page-students">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Students</h2>
+          <p>Manage student registrations and applications</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('student-modal')">+ Add Student</button>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('students', 'all')">All Students</div>
+        <div class="tab" onclick="switchTab('students', 'pending')">Pending Applications</div>
+        <div class="tab" onclick="switchTab('students', 'allocated')">Allocated</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="filter-bar" style="margin:0">
+            <input type="text" placeholder="Search by name or ID..." style="width:220px" onkeyup="filterStudents(this.value)">
+            <select onchange="filterStudentGender(this.value)">
+              <option value="">All Genders</option>
+              <option>Male</option><option>Female</option>
+            </select>
+          </div>
+          <span id="student-count" class="badge badge-blue">0 students</span>
+        </div>
+        <div style="padding:0">
+          <table class="data-table" id="students-table">
+            <thead>
+              <tr>
+                <th>Student ID</th><th>Name</th><th>Course</th><th>Year</th><th>Gender</th><th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="students-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────────────── HOSTELS & ROOMS ──────────────── -->
+    <div class="page" id="page-hostels">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Hostels & Rooms</h2>
+          <p>Manage hostel buildings and room inventory</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" onclick="openModal('hostel-modal')">+ Add Hostel</button>
+          <button class="btn btn-primary" onclick="openModal('room-modal')">+ Add Room</button>
+        </div>
+      </div>
+
+      <div id="hostel-list"><!-- filled by JS --></div>
+    </div>
+
+    <!-- ──────────────── ALLOCATIONS ──────────────── -->
+    <div class="page" id="page-allocations">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Room Allocations</h2>
+          <p>Assign and manage student room allocations</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('allocate-modal')">+ Allocate Room</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">All Allocations</span>
+          <span id="alloc-count" class="badge badge-blue">0 records</span>
+        </div>
+        <div style="padding:0">
+          <table class="data-table" id="alloc-table">
+            <thead>
+              <tr>
+                <th>Allocation ID</th><th>Student</th><th>Room</th><th>Hostel</th><th>Date</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="alloc-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────────────── PAYMENTS ──────────────── -->
+    <div class="page" id="page-payments">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Payments</h2>
+          <p>Track and verify hostel fee payments</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('payment-modal')">+ Record Payment</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Payment Records</span>
+          <div style="display:flex;gap:8px">
+            <select id="pay-filter" onchange="renderPayments()">
+              <option value="">All</option>
+              <option value="Paid">Paid</option>
+              <option value="Unpaid">Unpaid</option>
+              <option value="Partially Paid">Partially Paid</option>
+            </select>
+          </div>
+        </div>
+        <div style="padding:0">
+          <table class="data-table" id="pay-table">
+            <thead>
+              <tr>
+                <th>Payment ID</th><th>Student</th><th>Amount (KES)</th><th>Receipt</th><th>Date</th><th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="pay-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────────────── CHECK-IN / OUT ──────────────── -->
+    <div class="page" id="page-checkin">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Check-in / Check-out</h2>
+          <p>Manage student entry and departure</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header" style="background:#e8edff;border-radius:12px 12px 0 0">
+            <span class="panel-title" style="color:var(--accent)">🔑 Check-in Student</span>
+          </div>
+          <div class="panel-body">
+            <div class="form-group" style="margin-bottom:12px">
+              <label>Student ID</label>
+              <select id="checkin-student">
+                <option value="">Select student...</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label>Date & Time</label>
+              <input type="datetime-local" id="checkin-datetime">
+            </div>
+            <div class="form-group" style="margin-bottom:16px">
+              <label>Notes</label>
+              <textarea id="checkin-notes" placeholder="Optional notes..." style="min-height:60px"></textarea>
+            </div>
+            <button class="btn btn-primary" style="width:100%" onclick="doCheckin()">Confirm Check-in</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header" style="background:#fff3bf;border-radius:12px 12px 0 0">
+            <span class="panel-title" style="color:var(--warn)">🚪 Check-out Student</span>
+          </div>
+          <div class="panel-body">
+            <div class="form-group" style="margin-bottom:12px">
+              <label>Student ID</label>
+              <select id="checkout-student">
+                <option value="">Select student...</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label>Date & Time</label>
+              <input type="datetime-local" id="checkout-datetime">
+            </div>
+            <div class="form-group" style="margin-bottom:16px">
+              <label>Reason</label>
+              <select id="checkout-reason">
+                <option>End of Semester</option>
+                <option>Vacation</option>
+                <option>Transfer</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <button class="btn btn-ghost" style="width:100%;color:var(--warn);border-color:var(--warn)" onclick="doCheckout()">Confirm Check-out</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Check-in/out Log</span>
+        </div>
+        <div style="padding:0">
+          <table class="data-table" id="checkin-log-table">
+            <thead>
+              <tr><th>Student</th><th>Type</th><th>Date/Time</th><th>Room</th><th>Notes</th></tr>
+            </thead>
+            <tbody id="checkin-log-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────────────── CLEANING ──────────────── -->
+    <div class="page" id="page-cleaning">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Room Cleaning</h2>
+          <p>Track and update room cleaning status</p>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:20px">
+        <div class="stat-card green">
+          <div class="stat-label">Clean</div>
+          <div class="stat-value" id="clean-count">0</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-label">Needs Cleaning</div>
+          <div class="stat-value" id="dirty-count">0</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">In Progress</div>
+          <div class="stat-value" id="progress-count">0</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Room Cleaning Status</span>
+          <div style="display:flex;gap:8px">
+            <select id="clean-filter" onchange="renderCleaning()">
+              <option value="">All Rooms</option>
+              <option value="Clean">Clean</option>
+              <option value="Not Clean">Needs Cleaning</option>
+            </select>
+          </div>
+        </div>
+        <div style="padding:0">
+          <table class="data-table" id="clean-table">
+            <thead>
+              <tr><th>Room</th><th>Hostel</th><th>Occupancy</th><th>Cleaning Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="clean-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────────────── REPORTS ──────────────── -->
+    <div class="page" id="page-reports">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Reports</h2>
+          <p>System summaries and statistics</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">📦 Occupancy Summary</span></div>
+          <div class="panel-body" id="report-occupancy"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">💰 Payment Summary</span></div>
+          <div class="panel-body" id="report-payments"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">👤 Students by Course</span></div>
+        <div class="panel-body" id="report-courses"></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+
+<!-- Quick Action -->
+<div class="modal-overlay" id="quick-action-modal">
+  <div class="modal" style="width:380px">
+    <div class="modal-header">
+      <span class="modal-title">Quick Actions</span>
+      <button class="modal-close" onclick="closeModal('quick-action-modal')">✕</button>
+    </div>
+    <div class="modal-body" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn btn-ghost" style="flex-direction:column;gap:6px;padding:16px;height:auto" onclick="closeModal('quick-action-modal');openModal('student-modal')">🎓<span>Add Student</span></button>
+      <button class="btn btn-ghost" style="flex-direction:column;gap:6px;padding:16px;height:auto" onclick="closeModal('quick-action-modal');openModal('room-modal')">🛏<span>Add Room</span></button>
+      <button class="btn btn-ghost" style="flex-direction:column;gap:6px;padding:16px;height:auto" onclick="closeModal('quick-action-modal');openModal('allocate-modal')">📋<span>Allocate Room</span></button>
+      <button class="btn btn-ghost" style="flex-direction:column;gap:6px;padding:16px;height:auto" onclick="closeModal('quick-action-modal');openModal('payment-modal')">💳<span>Record Payment</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Student Modal -->
+<div class="modal-overlay" id="student-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add New Student</span>
+      <button class="modal-close" onclick="closeModal('student-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" id="s-name" placeholder="e.g. Jane Wanjiku">
+        </div>
+        <div class="form-group">
+          <label>Student ID *</label>
+          <input type="text" id="s-id" placeholder="e.g. STU-001">
+        </div>
+        <div class="form-group">
+          <label>Course *</label>
+          <input type="text" id="s-course" placeholder="e.g. Computer Science">
+        </div>
+        <div class="form-group">
+          <label>Year of Study</label>
+          <select id="s-year">
+            <option>Year 1</option><option>Year 2</option><option>Year 3</option><option>Year 4</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Gender</label>
+          <select id="s-gender">
+            <option>Male</option><option>Female</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Hostel Preference</label>
+          <select id="s-hostel-pref">
+            <option value="">No preference</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('student-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="addStudent()">Save Student</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Hostel Modal -->
+<div class="modal-overlay" id="hostel-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add New Hostel</span>
+      <button class="modal-close" onclick="closeModal('hostel-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Hostel Name *</label>
+          <input type="text" id="h-name" placeholder="e.g. Sunrise Block A">
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select id="h-type">
+            <option>Male</option><option>Female</option><option>Mixed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Total Capacity</label>
+          <input type="number" id="h-cap" placeholder="e.g. 120">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('hostel-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="addHostel()">Save Hostel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Room Modal -->
+<div class="modal-overlay" id="room-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add New Room</span>
+      <button class="modal-close" onclick="closeModal('room-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Hostel *</label>
+          <select id="r-hostel">
+            <option value="">Select hostel...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Room Number *</label>
+          <input type="text" id="r-number" placeholder="e.g. 101A">
+        </div>
+        <div class="form-group">
+          <label>Capacity</label>
+          <input type="number" id="r-cap" value="2" min="1" max="6">
+        </div>
+        <div class="form-group">
+          <label>Cleaning Status</label>
+          <select id="r-clean">
+            <option>Clean</option><option>Not Clean</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('room-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="addRoom()">Save Room</button>
+    </div>
+  </div>
+</div>
+
+<!-- Allocate Room Modal -->
+<div class="modal-overlay" id="allocate-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Allocate Room to Student</span>
+      <button class="modal-close" onclick="closeModal('allocate-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Student *</label>
+          <select id="al-student">
+            <option value="">Select student...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Room *</label>
+          <select id="al-room">
+            <option value="">Select available room...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Allocation Date</label>
+          <input type="date" id="al-date">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('allocate-modal')">Cancel</button>
+      <button class="btn btn-success" onclick="allocateRoom()">Confirm Allocation</button>
+    </div>
+  </div>
+</div>
+
+<!-- Record Payment Modal -->
+<div class="modal-overlay" id="payment-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Record Payment</span>
+      <button class="modal-close" onclick="closeModal('payment-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Student *</label>
+          <select id="p-student">
+            <option value="">Select student...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Amount (KES) *</label>
+          <input type="number" id="p-amount" placeholder="e.g. 15000">
+        </div>
+        <div class="form-group">
+          <label>Receipt Number *</label>
+          <input type="text" id="p-receipt" placeholder="e.g. RCP-2025-001">
+        </div>
+        <div class="form-group">
+          <label>Payment Date</label>
+          <input type="date" id="p-date">
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="p-status">
+            <option>Paid</option><option>Partially Paid</option><option>Unpaid</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('payment-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="recordPayment()">Save Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  DATA STORE
+// ═══════════════════════════════════════════════
+let db = {
+  students: [
+    { id:'STU-001', name:'Alice Mwangi', course:'Computer Science', year:'Year 2', gender:'Female', status:'Allocated', hostelPref:'H-001' },
+    { id:'STU-002', name:'Brian Omondi', course:'Engineering', year:'Year 1', gender:'Male', status:'Pending', hostelPref:'H-002' },
+    { id:'STU-003', name:'Carol Njeri', course:'Business', year:'Year 3', gender:'Female', status:'Allocated', hostelPref:'H-001' },
+    { id:'STU-004', name:'David Kamau', course:'Medicine', year:'Year 4', gender:'Male', status:'Pending', hostelPref:'' },
+    { id:'STU-005', name:'Emma Achieng', course:'Law', year:'Year 2', gender:'Female', status:'Allocated', hostelPref:'H-001' },
+  ],
+  hostels: [
+    { id:'H-001', name:'Sunrise House', type:'Female', capacity:60 },
+    { id:'H-002', name:'Oakwood Block', type:'Male', capacity:80 },
+    { id:'H-003', name:'Unity Hall', type:'Mixed', capacity:40 },
+  ],
+  rooms: [
+    { id:'R-001', hostelId:'H-001', number:'101', capacity:2, status:'Occupied', cleaning:'Clean' },
+    { id:'R-002', hostelId:'H-001', number:'102', capacity:2, status:'Occupied', cleaning:'Clean' },
+    { id:'R-003', hostelId:'H-001', number:'103', capacity:2, status:'Available', cleaning:'Not Clean' },
+    { id:'R-004', hostelId:'H-002', number:'201', capacity:2, status:'Occupied', cleaning:'Clean' },
+    { id:'R-005', hostelId:'H-002', number:'202', capacity:3, status:'Available', cleaning:'Clean' },
+    { id:'R-006', hostelId:'H-002', number:'203', capacity:2, status:'Available', cleaning:'Not Clean' },
+    { id:'R-007', hostelId:'H-003', number:'301', capacity:2, status:'Available', cleaning:'Clean' },
+    { id:'R-008', hostelId:'H-003', number:'302', capacity:2, status:'Occupied', cleaning:'Clean' },
+  ],
+  allocations: [
+    { id:'AL-001', studentId:'STU-001', roomId:'R-001', date:'2025-01-15' },
+    { id:'AL-002', studentId:'STU-003', roomId:'R-002', date:'2025-01-15' },
+    { id:'AL-003', studentId:'STU-005', roomId:'R-004', date:'2025-01-16' },
+  ],
+  payments: [
+    { id:'PAY-001', studentId:'STU-001', amount:15000, receipt:'RCP-001', date:'2025-01-10', status:'Paid' },
+    { id:'PAY-002', studentId:'STU-002', amount:7500, receipt:'RCP-002', date:'2025-01-12', status:'Partially Paid' },
+    { id:'PAY-003', studentId:'STU-003', amount:15000, receipt:'RCP-003', date:'2025-01-14', status:'Paid' },
+    { id:'PAY-004', studentId:'STU-004', amount:0, receipt:'—', date:'2025-01-01', status:'Unpaid' },
+  ],
+  checkinLog: [
+    { student:'STU-001', type:'Check-in', datetime:'2025-01-15 09:00', room:'R-001', notes:'Semester start' },
+    { student:'STU-003', type:'Check-in', datetime:'2025-01-15 10:30', room:'R-002', notes:'' },
+  ],
+  activities: [
+    { text:'Alice Mwangi checked into Room 101', time:'Today, 09:00', color:'blue' },
+    { text:'Payment RCP-003 verified for Carol Njeri', time:'Today, 10:15', color:'green' },
+    { text:'Room 103 marked as needs cleaning', time:'Yesterday, 16:00', color:'orange' },
+    { text:'Brian Omondi application received', time:'Yesterday, 14:30', color:'blue' },
+  ]
+};
+
+let counters = { student: db.students.length+1, hostel: db.hostels.length+1, room: db.rooms.length+1, alloc: db.allocations.length+1, pay: db.payments.length+1 };
+
+// ═══════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick')?.includes(page)) n.classList.add('active');
+  });
+  const titles = { dashboard:'Dashboard', students:'Students', hostels:'Hostels & Rooms', allocations:'Allocations', payments:'Payments', checkin:'Check-in / Out', cleaning:'Cleaning', reports:'Reports' };
+  document.getElementById('topbar-title').textContent = titles[page] || page;
+  renderPage(page);
+}
+
+function renderPage(page) {
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'students') renderStudents();
+  if (page === 'hostels') renderHostels();
+  if (page === 'allocations') renderAllocations();
+  if (page === 'payments') renderPayments();
+  if (page === 'checkin') renderCheckin();
+  if (page === 'cleaning') renderCleaning();
+  if (page === 'reports') renderReports();
+}
+
+// ═══════════════════════════════════════════════
+//  MODALS
+// ═══════════════════════════════════════════════
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  populateDropdowns();
+  const today = new Date().toISOString().split('T')[0];
+  ['al-date','p-date'].forEach(f => { const el = document.getElementById(f); if(el) el.value = today; });
+  const now = new Date().toISOString().slice(0,16);
+  ['checkin-datetime','checkout-datetime'].forEach(f => { const el = document.getElementById(f); if(el) el.value = now; });
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if(e.target === overlay) overlay.classList.remove('open'); });
+});
+
+function populateDropdowns() {
+  const hostelSel = document.getElementById('r-hostel');
+  if (hostelSel) { hostelSel.innerHTML = '<option value="">Select hostel...</option>' + db.hostels.map(h => `<option value="${h.id}">${h.name}</option>`).join(''); }
+
+  const hostelPref = document.getElementById('s-hostel-pref');
+  if (hostelPref) { hostelPref.innerHTML = '<option value="">No preference</option>' + db.hostels.map(h => `<option value="${h.id}">${h.name}</option>`).join(''); }
+
+  const alStudent = document.getElementById('al-student');
+  if (alStudent) { alStudent.innerHTML = '<option value="">Select student...</option>' + db.students.filter(s => s.status !== 'Allocated').map(s => `<option value="${s.id}">${s.name} (${s.id})</option>`).join(''); }
+
+  const alRoom = document.getElementById('al-room');
+  if (alRoom) { alRoom.innerHTML = '<option value="">Select available room...</option>' + db.rooms.filter(r => r.status === 'Available').map(r => { const h = db.hostels.find(h => h.id === r.hostelId); return `<option value="${r.id}">${h?.name} — Room ${r.number} (cap ${r.capacity})</option>`; }).join(''); }
+
+  const pStudent = document.getElementById('p-student');
+  if (pStudent) { pStudent.innerHTML = '<option value="">Select student...</option>' + db.students.map(s => `<option value="${s.id}">${s.name} (${s.id})</option>`).join(''); }
+
+  ['checkin-student','checkout-student'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.innerHTML = '<option value="">Select student...</option>' + db.students.map(s => `<option value="${s.id}">${s.name}</option>`).join(''); }
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════
+function toast(msg, type = 'success') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = (type === 'success' ? '✓' : type === 'error' ? '✕' : '⚠') + ' ' + msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+// ═══════════════════════════════════════════════
+//  TABS
+// ═══════════════════════════════════════════════
+function switchTab(page, tab) {
+  const tabs = document.querySelectorAll(`#page-${page} .tab`);
+  tabs.forEach((t, i) => t.classList.toggle('active', t.getAttribute('onclick')?.includes(tab)));
+}
+
+// ═══════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════
+function renderDashboard() {
+  document.getElementById('stat-students').textContent = db.students.length;
+  document.getElementById('stat-total-rooms').textContent = db.rooms.length;
+  document.getElementById('stat-occupied').textContent = db.rooms.filter(r => r.status === 'Occupied').length;
+  document.getElementById('stat-pending-pay').textContent = db.payments.filter(p => p.status !== 'Paid').length;
+  document.getElementById('stat-pending-apps').textContent = db.students.filter(s => s.status === 'Pending').length;
+
+  // Hostel occupancy
+  const ocPanel = document.getElementById('hostel-occupancy-panel');
+  ocPanel.innerHTML = db.hostels.map(h => {
+    const rooms = db.rooms.filter(r => r.hostelId === h.id);
+    const occ = rooms.filter(r => r.status === 'Occupied').length;
+    const pct = rooms.length ? Math.round(occ / rooms.length * 100) : 0;
+    return `<div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:13px;font-weight:500">${h.name}</span>
+        <span style="font-size:12px;color:var(--ink-muted)">${occ}/${rooms.length} rooms</span>
+      </div>
+      <div class="occ-bar"><div class="occ-fill" style="width:${pct}%"></div></div>
+      <div style="font-size:11px;color:var(--ink-muted);margin-top:3px">${pct}% occupied · ${h.type}</div>
+    </div>`;
+  }).join('');
+
+  // Activity feed
+  document.getElementById('activity-feed').innerHTML = db.activities.map(a =>
+    `<div class="activity-item"><div class="activity-dot ${a.color}"></div><div><div class="activity-text">${a.text}</div><div class="activity-time">${a.time}</div></div></div>`
+  ).join('') || '<div class="empty-state"><p>No recent activity</p></div>';
+
+  // Recent allocations
+  const tbody = document.getElementById('dash-alloc-tbody');
+  const recent = [...db.allocations].reverse().slice(0, 5);
+  tbody.innerHTML = recent.map(al => {
+    const st = db.students.find(s => s.id === al.studentId);
+    const rm = db.rooms.find(r => r.id === al.roomId);
+    const h = rm ? db.hostels.find(h => h.id === rm.hostelId) : null;
+    return `<tr>
+      <td><strong>${st?.name || al.studentId}</strong></td>
+      <td>Room ${rm?.number || al.roomId}</td>
+      <td>${h?.name || '—'}</td>
+      <td>${al.date}</td>
+      <td><span class="badge badge-success">Active</span></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5"><div class="empty-state"><p>No allocations yet</p></div></td></tr>';
+}
+
+// ═══════════════════════════════════════════════
+//  STUDENTS
+// ═══════════════════════════════════════════════
+let studentFilter = '';
+let studentGenderFilter = '';
+
+function renderStudents(filter = studentFilter, gender = studentGenderFilter) {
+  studentFilter = filter; studentGenderFilter = gender;
+  let list = db.students.filter(s =>
+    (!filter || s.name.toLowerCase().includes(filter.toLowerCase()) || s.id.toLowerCase().includes(filter.toLowerCase())) &&
+    (!gender || s.gender === gender)
+  );
+  document.getElementById('student-count').textContent = list.length + ' students';
+  document.getElementById('students-tbody').innerHTML = list.map(s => `
+    <tr>
+      <td><span class="badge badge-blue">${s.id}</span></td>
+      <td><strong>${s.name}</strong></td>
+      <td>${s.course}</td>
+      <td>${s.year}</td>
+      <td>${s.gender}</td>
+      <td><span class="badge ${s.status === 'Allocated' ? 'badge-success' : 'badge-warn'}">${s.status}</span></td>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick="deleteStudent('${s.id}')">🗑 Remove</button>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="7"><div class="empty-state"><div class="icon">👤</div><p>No students found</p></div></td></tr>';
+}
+
+function filterStudents(v) { renderStudents(v, studentGenderFilter); }
+function filterStudentGender(v) { renderStudents(studentFilter, v); }
+
+function addStudent() {
+  const name = document.getElementById('s-name').value.trim();
+  const id = document.getElementById('s-id').value.trim();
+  const course = document.getElementById('s-course').value.trim();
+  const year = document.getElementById('s-year').value;
+  const gender = document.getElementById('s-gender').value;
+  const pref = document.getElementById('s-hostel-pref').value;
+  if (!name || !id || !course) { toast('Please fill required fields', 'error'); return; }
+  if (db.students.find(s => s.id === id)) { toast('Student ID already exists', 'error'); return; }
+  db.students.push({ id, name, course, year, gender, status: 'Pending', hostelPref: pref });
+  db.activities.unshift({ text: `New student ${name} registered`, time: 'Just now', color: 'blue' });
+  closeModal('student-modal');
+  toast(`${name} added successfully`);
+  ['s-name','s-id','s-course'].forEach(f => document.getElementById(f).value = '');
+  renderStudents();
+}
+
+function deleteStudent(id) {
+  if (!confirm('Remove this student?')) return;
+  db.students = db.students.filter(s => s.id !== id);
+  renderStudents();
+  toast('Student removed', 'warn');
+}
+
+// ═══════════════════════════════════════════════
+//  HOSTELS & ROOMS
+// ═══════════════════════════════════════════════
+function renderHostels() {
+  const container = document.getElementById('hostel-list');
+  container.innerHTML = db.hostels.map(h => {
+    const rooms = db.rooms.filter(r => r.hostelId === h.id);
+    const avail = rooms.filter(r => r.status === 'Available').length;
+    const occ = rooms.filter(r => r.status === 'Occupied').length;
+    return `
+    <div class="panel" style="margin-bottom:20px">
+      <div class="panel-header">
+        <div>
+          <span class="panel-title">${h.name}</span>
+          <span class="badge badge-gray" style="margin-left:8px">${h.type}</span>
+          <span class="badge badge-blue" style="margin-left:6px">Cap: ${h.capacity}</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:12px;color:var(--ink-muted)">${avail} available · ${occ} occupied</span>
+          <button class="btn btn-danger btn-sm" onclick="deleteHostel('${h.id}')">Remove Hostel</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="rooms-grid">
+          ${rooms.length ? rooms.map(r => {
+            const cls = r.status === 'Available' ? 'available' : r.cleaning === 'Not Clean' ? 'cleaning' : 'occupied';
+            return `<div class="room-card ${cls}" onclick="toggleRoom('${r.id}')">
+              <div class="room-number">${r.number}</div>
+              <div class="room-meta">Cap: ${r.capacity} · ${r.cleaning}</div>
+              <div class="room-status">${r.status}</div>
+            </div>`;
+          }).join('') : '<p style="color:var(--ink-muted);font-size:13px">No rooms added yet.</p>'}
+        </div>
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty-state"><div class="icon">🏠</div><p>No hostels added yet. Click "Add Hostel" to get started.</p></div>';
+}
+
+function addHostel() {
+  const name = document.getElementById('h-name').value.trim();
+  const type = document.getElementById('h-type').value;
+  const cap = parseInt(document.getElementById('h-cap').value) || 0;
+  if (!name) { toast('Hostel name required', 'error'); return; }
+  const id = 'H-' + String(counters.hostel++).padStart(3,'0');
+  db.hostels.push({ id, name, type, capacity: cap });
+  closeModal('hostel-modal');
+  toast(`${name} added`);
+  document.getElementById('h-name').value = '';
+  renderHostels();
+}
+
+function addRoom() {
+  const hostelId = document.getElementById('r-hostel').value;
+  const number = document.getElementById('r-number').value.trim();
+  const cap = parseInt(document.getElementById('r-cap').value) || 2;
+  const cleaning = document.getElementById('r-clean').value;
+  if (!hostelId || !number) { toast('Select hostel and enter room number', 'error'); return; }
+  const id = 'R-' + String(counters.room++).padStart(3,'0');
+  db.rooms.push({ id, hostelId, number, capacity: cap, status: 'Available', cleaning });
+  closeModal('room-modal');
+  toast(`Room ${number} added`);
+  document.getElementById('r-number').value = '';
+  renderHostels();
+}
+
+function deleteHostel(id) {
+  if (!confirm('Remove this hostel and all its rooms?')) return;
+  db.hostels = db.hostels.filter(h => h.id !== id);
+  db.rooms = db.rooms.filter(r => r.hostelId !== id);
+  renderHostels();
+  toast('Hostel removed', 'warn');
+}
+
+function toggleRoom(id) {
+  const room = db.rooms.find(r => r.id === id);
+  if (!room) return;
+  if (room.status === 'Available') { room.status = 'Occupied'; toast(`Room ${room.number} marked occupied`); }
+  else { room.status = 'Available'; toast(`Room ${room.number} marked available`, 'warn'); }
+  renderHostels();
+}
+
+// ═══════════════════════════════════════════════
+//  ALLOCATIONS
+// ═══════════════════════════════════════════════
+function renderAllocations() {
+  document.getElementById('alloc-count').textContent = db.allocations.length + ' records';
+  document.getElementById('alloc-tbody').innerHTML = [...db.allocations].reverse().map(al => {
+    const st = db.students.find(s => s.id === al.studentId);
+    const rm = db.rooms.find(r => r.id === al.roomId);
+    const h = rm ? db.hostels.find(h => h.id === rm.hostelId) : null;
+    return `<tr>
+      <td><span class="badge badge-blue">${al.id}</span></td>
+      <td>${st?.name || al.studentId}</td>
+      <td>Room ${rm?.number || al.roomId}</td>
+      <td>${h?.name || '—'}</td>
+      <td>${al.date}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deallocate('${al.id}')">Deallocate</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="6"><div class="empty-state"><div class="icon">📋</div><p>No allocations yet</p></div></td></tr>';
+}
+
+function allocateRoom() {
+  const studentId = document.getElementById('al-student').value;
+  const roomId = document.getElementById('al-room').value;
+  const date = document.getElementById('al-date').value;
+  if (!studentId || !roomId) { toast('Select both student and room', 'error'); return; }
+  const id = 'AL-' + String(counters.alloc++).padStart(3,'0');
+  db.allocations.push({ id, studentId, roomId, date });
+  const room = db.rooms.find(r => r.id === roomId);
+  if (room) room.status = 'Occupied';
+  const student = db.students.find(s => s.id === studentId);
+  if (student) student.status = 'Allocated';
+  const st = db.students.find(s => s.id === studentId);
+  db.activities.unshift({ text: `${st?.name} allocated to Room ${room?.number}`, time: 'Just now', color: 'green' });
+  closeModal('allocate-modal');
+  toast('Room allocated successfully');
+  renderAllocations();
+}
+
+function deallocate(id) {
+  if (!confirm('Remove this allocation?')) return;
+  const al = db.allocations.find(a => a.id === id);
+  if (al) {
+    const room = db.rooms.find(r => r.id === al.roomId);
+    if (room) { room.status = 'Available'; room.cleaning = 'Not Clean'; }
+    const student = db.students.find(s => s.id === al.studentId);
+    if (student) student.status = 'Pending';
+  }
+  db.allocations = db.allocations.filter(a => a.id !== id);
+  renderAllocations();
+  toast('Allocation removed', 'warn');
+}
+
+// ═══════════════════════════════════════════════
+//  PAYMENTS
+// ═══════════════════════════════════════════════
+function renderPayments() {
+  const filter = document.getElementById('pay-filter')?.value || '';
+  let list = filter ? db.payments.filter(p => p.status === filter) : db.payments;
+  document.getElementById('pay-tbody').innerHTML = [...list].reverse().map(p => {
+    const st = db.students.find(s => s.id === p.studentId);
+    const badgeCls = p.status === 'Paid' ? 'badge-success' : p.status === 'Unpaid' ? 'badge-danger' : 'badge-warn';
+    return `<tr>
+      <td><span class="badge badge-blue">${p.id}</span></td>
+      <td>${st?.name || p.studentId}</td>
+      <td><strong>${p.amount.toLocaleString()}</strong></td>
+      <td>${p.receipt}</td>
+      <td>${p.date}</td>
+      <td><span class="badge ${badgeCls}">${p.status}</span></td>
+      <td>
+        ${p.status !== 'Paid' ? `<button class="btn btn-success btn-sm" onclick="verifyPayment('${p.id}')">✓ Verify</button>` : '<span style="color:var(--success);font-size:12px">✓ Verified</span>'}
+      </td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="7"><div class="empty-state"><div class="icon">💳</div><p>No payments found</p></div></td></tr>';
+}
+
+function recordPayment() {
+  const studentId = document.getElementById('p-student').value;
+  const amount = parseFloat(document.getElementById('p-amount').value) || 0;
+  const receipt = document.getElementById('p-receipt').value.trim();
+  const date = document.getElementById('p-date').value;
+  const status = document.getElementById('p-status').value;
+  if (!studentId || !receipt || amount <= 0) { toast('Fill all required fields', 'error'); return; }
+  const id = 'PAY-' + String(counters.pay++).padStart(3,'0');
+  db.payments.push({ id, studentId, amount, receipt, date, status });
+  const st = db.students.find(s => s.id === studentId);
+  db.activities.unshift({ text: `Payment ${receipt} recorded for ${st?.name}`, time: 'Just now', color: 'green' });
+  closeModal('payment-modal');
+  toast('Payment recorded');
+  ['p-amount','p-receipt'].forEach(f => document.getElementById(f).value = '');
+  renderPayments();
+}
+
+function verifyPayment(id) {
+  const p = db.payments.find(p => p.id === id);
+  if (p) { p.status = 'Paid'; toast(`Payment ${p.receipt} verified`); renderPayments(); }
+}
+
+// ═══════════════════════════════════════════════
+//  CHECK-IN / OUT
+// ═══════════════════════════════════════════════
+function renderCheckin() {
+  populateDropdowns();
+  const tbody = document.getElementById('checkin-log-tbody');
+  tbody.innerHTML = [...db.checkinLog].reverse().map(e => {
+    const st = db.students.find(s => s.id === e.student);
+    const rm = db.rooms.find(r => r.id === e.room);
+    return `<tr>
+      <td>${st?.name || e.student}</td>
+      <td><span class="badge ${e.type === 'Check-in' ? 'badge-success' : 'badge-warn'}">${e.type}</span></td>
+      <td>${e.datetime}</td>
+      <td>${rm ? 'Room ' + rm.number : e.room}</td>
+      <td>${e.notes || '—'}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5"><div class="empty-state"><p>No log entries</p></div></td></tr>';
+}
+
+function doCheckin() {
+  const student = document.getElementById('checkin-student').value;
+  const dt = document.getElementById('checkin-datetime').value;
+  const notes = document.getElementById('checkin-notes').value;
+  if (!student) { toast('Select a student', 'error'); return; }
+  const alloc = db.allocations.find(a => a.studentId === student);
+  if (!alloc) { toast('Student has no room allocation', 'error'); return; }
+  db.checkinLog.push({ student, type: 'Check-in', datetime: dt.replace('T',' '), room: alloc.roomId, notes });
+  db.activities.unshift({ text: `${db.students.find(s=>s.id===student)?.name} checked in`, time: 'Just now', color: 'green' });
+  toast('Check-in recorded');
+  document.getElementById('checkin-notes').value = '';
+  renderCheckin();
+}
+
+function doCheckout() {
+  const student = document.getElementById('checkout-student').value;
+  const dt = document.getElementById('checkout-datetime').value;
+  const reason = document.getElementById('checkout-reason').value;
+  if (!student) { toast('Select a student', 'error'); return; }
+  const alloc = db.allocations.find(a => a.studentId === student);
+  db.checkinLog.push({ student, type: 'Check-out', datetime: dt.replace('T',' '), room: alloc?.roomId || '—', notes: reason });
+  if (alloc) {
+    const room = db.rooms.find(r => r.id === alloc.roomId);
+    if (room) { room.status = 'Available'; room.cleaning = 'Not Clean'; }
+  }
+  db.activities.unshift({ text: `${db.students.find(s=>s.id===student)?.name} checked out (${reason})`, time: 'Just now', color: 'orange' });
+  toast('Check-out recorded', 'warn');
+  renderCheckin();
+}
+
+// ═══════════════════════════════════════════════
+//  CLEANING
+// ═══════════════════════════════════════════════
+function renderCleaning() {
+  const filter = document.getElementById('clean-filter')?.value || '';
+  let rooms = filter ? db.rooms.filter(r => r.cleaning === filter) : db.rooms;
+
+  const clean = db.rooms.filter(r => r.cleaning === 'Clean').length;
+  const dirty = db.rooms.filter(r => r.cleaning === 'Not Clean').length;
+  document.getElementById('clean-count').textContent = clean;
+  document.getElementById('dirty-count').textContent = dirty;
+  document.getElementById('progress-count').textContent = 0;
+
+  document.getElementById('clean-tbody').innerHTML = rooms.map(r => {
+    const h = db.hostels.find(h => h.id === r.hostelId);
+    const isClean = r.cleaning === 'Clean';
+    return `<tr>
+      <td><strong>Room ${r.number}</strong></td>
+      <td>${h?.name || '—'}</td>
+      <td><span class="badge ${r.status === 'Occupied' ? 'badge-gray' : 'badge-success'}">${r.status}</span></td>
+      <td><span class="badge ${isClean ? 'badge-success' : 'badge-danger'}">${r.cleaning}</span></td>
+      <td>
+        <button class="btn btn-sm ${isClean ? 'btn-ghost' : 'btn-success'}" onclick="toggleCleaning('${r.id}')">
+          ${isClean ? '🧹 Mark Dirty' : '✓ Mark Clean'}
+        </button>
+      </td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5"><div class="empty-state"><p>No rooms found</p></div></td></tr>';
+}
+
+function toggleCleaning(id) {
+  const room = db.rooms.find(r => r.id === id);
+  if (!room) return;
+  room.cleaning = room.cleaning === 'Clean' ? 'Not Clean' : 'Clean';
+  toast(`Room ${room.number} marked as ${room.cleaning}`);
+  renderCleaning();
+}
+
+// ═══════════════════════════════════════════════
+//  REPORTS
+// ═══════════════════════════════════════════════
+function renderReports() {
+  // Occupancy
+  const totalRooms = db.rooms.length;
+  const occupiedRooms = db.rooms.filter(r => r.status === 'Occupied').length;
+  const pct = totalRooms ? Math.round(occupiedRooms / totalRooms * 100) : 0;
+  document.getElementById('report-occupancy').innerHTML = `
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:24px;font-family:'DM Serif Display',serif">${pct}%</span>
+        <span style="font-size:12px;color:var(--ink-muted)">${occupiedRooms} / ${totalRooms} rooms</span>
+      </div>
+      <div class="occ-bar" style="height:10px"><div class="occ-fill" style="width:${pct}%"></div></div>
+    </div>
+    ${db.hostels.map(h => {
+      const rooms = db.rooms.filter(r => r.hostelId === h.id);
+      const occ = rooms.filter(r => r.status === 'Occupied').length;
+      const p = rooms.length ? Math.round(occ/rooms.length*100) : 0;
+      return `<div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:12px">${h.name}</span><span style="font-size:12px;color:var(--ink-muted)">${occ}/${rooms.length}</span>
+        </div>
+        <div class="occ-bar"><div class="occ-fill" style="width:${p}%"></div></div>
+      </div>`;
+    }).join('')}`;
+
+  // Payment summary
+  const totalPaid = db.payments.filter(p => p.status === 'Paid').reduce((a,p) => a+p.amount, 0);
+  const totalPending = db.payments.filter(p => p.status !== 'Paid').reduce((a,p) => a+p.amount, 0);
+  document.getElementById('report-payments').innerHTML = `
+    <table class="data-table">
+      <tr><td><strong>Total Collected</strong></td><td style="font-weight:700;color:var(--success)">KES ${totalPaid.toLocaleString()}</td></tr>
+      <tr><td>Partially Paid</td><td style="color:var(--warn)">${db.payments.filter(p=>p.status==='Partially Paid').length} students</td></tr>
+      <tr><td>Unpaid</td><td style="color:var(--danger)">${db.payments.filter(p=>p.status==='Unpaid').length} students</td></tr>
+      <tr><td>Total Verified</td><td>${db.payments.filter(p=>p.status==='Paid').length} payments</td></tr>
+    </table>`;
+
+  // Students by course
+  const courses = {};
+  db.students.forEach(s => { courses[s.course] = (courses[s.course] || 0) + 1; });
+  document.getElementById('report-courses').innerHTML = `
+    <table class="data-table">
+      <thead><tr><th>Course</th><th>Students</th><th>Distribution</th></tr></thead>
+      <tbody>${Object.entries(courses).sort((a,b) => b[1]-a[1]).map(([course, count]) => {
+        const pct = Math.round(count / db.students.length * 100);
+        return `<tr>
+          <td>${course}</td>
+          <td>${count}</td>
+          <td><div class="occ-bar" style="width:120px;display:inline-block"><div class="occ-fill" style="width:${pct}%"></div></div> <span style="font-size:11px;color:var(--ink-muted)">${pct}%</span></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+}
+
+// ═══════════════════════════════════════════════
+//  ROLE DEFINITIONS
+// ═══════════════════════════════════════════════
+const ROLE_CONFIG = {
+  admin: {
+    label: 'Administrator',
+    icon: '⚙️',
+    color: 'admin',
+    description: 'Full system access — manage students, rooms, payments, allocations and generate reports.',
+    pages: ['dashboard','students','hostels','allocations','payments','checkin','cleaning','reports'],
+    nav: [
+      { section:'Overview', items:[{page:'dashboard',icon:'⊞',label:'Dashboard'}] },
+      { section:'Management', items:[
+        {page:'students',icon:'🎓',label:'Students'},
+        {page:'hostels',icon:'🏠',label:'Hostels & Rooms'},
+        {page:'allocations',icon:'📋',label:'Allocations'},
+        {page:'payments',icon:'💳',label:'Payments'},
+      ]},
+      { section:'Operations', items:[
+        {page:'checkin',icon:'🔑',label:'Check-in / Out'},
+        {page:'cleaning',icon:'🧹',label:'Cleaning'},
+        {page:'reports',icon:'📊',label:'Reports'},
+      ]},
+    ]
+  },
+  finance: {
+    label: 'Finance Officer',
+    icon: '💳',
+    color: 'finance',
+    description: 'Access to payments and financial reports only. Room and student management is restricted.',
+    pages: ['dashboard','payments','reports'],
+    nav: [
+      { section:'Overview', items:[{page:'dashboard',icon:'⊞',label:'Dashboard'}] },
+      { section:'Finance', items:[
+        {page:'payments',icon:'💳',label:'Payments'},
+        {page:'reports',icon:'📊',label:'Reports'},
+      ]},
+      { section:'Restricted', items:[
+        {page:'students',icon:'🎓',label:'Students',locked:true},
+        {page:'hostels',icon:'🏠',label:'Hostels & Rooms',locked:true},
+        {page:'allocations',icon:'📋',label:'Allocations',locked:true},
+      ]},
+    ]
+  },
+  student: {
+    label: 'Student',
+    icon: '🎓',
+    color: 'student',
+    description: 'View your room allocation, payment status, and check-in / check-out history.',
+    pages: ['dashboard','payments','checkin'],
+    nav: [
+      { section:'My Account', items:[{page:'dashboard',icon:'⊞',label:'My Dashboard'}] },
+      { section:'My Hostel', items:[
+        {page:'checkin',icon:'🔑',label:'Check-in / Out'},
+        {page:'payments',icon:'💳',label:'My Payments'},
+      ]},
+      { section:'Restricted', items:[
+        {page:'students',icon:'🎓',label:'Student Records',locked:true},
+        {page:'hostels',icon:'🏠',label:'Hostel Management',locked:true},
+        {page:'allocations',icon:'📋',label:'Allocations',locked:true},
+        {page:'reports',icon:'📊',label:'Reports',locked:true},
+      ]},
+    ]
+  },
+  cleaner: {
+    label: 'Cleaner',
+    icon: '🧹',
+    color: 'cleaner',
+    description: 'Update room cleaning status after check-out. All other sections are restricted.',
+    pages: ['dashboard','cleaning'],
+    nav: [
+      { section:'Overview', items:[{page:'dashboard',icon:'⊞',label:'Dashboard'}] },
+      { section:'My Tasks', items:[
+        {page:'cleaning',icon:'🧹',label:'Room Cleaning'},
+      ]},
+      { section:'Restricted', items:[
+        {page:'students',icon:'🎓',label:'Students',locked:true},
+        {page:'payments',icon:'💳',label:'Payments',locked:true},
+        {page:'allocations',icon:'📋',label:'Allocations',locked:true},
+        {page:'reports',icon:'📊',label:'Reports',locked:true},
+      ]},
+    ]
+  }
+};
+
+// ═══════════════════════════════════════════════
+//  SESSION & INIT
+// ═══════════════════════════════════════════════
+let currentUser = { name:'Admin User', email:'admin@havens.ac.ke', role:'admin' };
+
+function initSession() {
+  const stored = sessionStorage.getItem('user') || sessionStorage.getItem('hms_user');
+  if (!stored) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  try {
+    currentUser = JSON.parse(stored);
+  } catch(e) {}
+
+  currentUser.role = String(currentUser.role || '').toLowerCase();
+  if (!ROLE_CONFIG[currentUser.role]) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const cfg = ROLE_CONFIG[currentUser.role] || ROLE_CONFIG.admin;
+  const initials = currentUser.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+
+  // Update sidebar user info
+  document.getElementById('user-avatar-text').textContent = initials;
+  document.getElementById('sidebar-name').textContent = currentUser.name;
+  document.getElementById('sidebar-role').textContent = cfg.label;
+
+  // Build sidebar nav
+  const nav = document.getElementById('sidebar-nav');
+  nav.innerHTML = cfg.nav.map(section => `
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">${section.section}</div>
+      ${section.items.map(item => `
+        <div class="nav-item${item.locked ? ' locked' : ''}"
+             onclick="${item.locked ? 'showLockedMsg()' : `navigate('${item.page}')`}"
+             id="nav-${item.page}"
+             title="${item.locked ? 'Access restricted for your role' : ''}">
+          <span class="icon">${item.icon}</span> ${item.label}
+          ${item.locked ? '<span style="margin-left:auto;font-size:10px;opacity:.6">🔒</span>' : ''}
+        </div>`).join('')}
+    </div>`).join('');
+
+  // Inject role banner into dashboard
+  const roleBanner = `
+    <div class="role-banner ${cfg.color}" id="role-banner">
+      <span class="rb-icon">${cfg.icon}</span>
+      <div class="rb-text">
+        <strong>${cfg.label}</strong>
+        <span>${cfg.description}</span>
+      </div>
+    </div>`;
+
+  const dashPage = document.getElementById('page-dashboard');
+  dashPage.insertAdjacentHTML('afterbegin', roleBanner);
+
+  renderDashboard();
+}
+
+function showLockedMsg() {
+  const cfg = ROLE_CONFIG[currentUser.role] || ROLE_CONFIG.admin;
+  // show a temporary toast
+  const el = document.createElement('div');
+  el.className = 'toast error';
+  el.innerHTML = '🔒 This section is not available for the <strong>' + cfg.label + '</strong> role.';
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// Override navigate to enforce role access
+const _origNavigate = navigate;
+function navigate(page) {
+  const cfg = ROLE_CONFIG[currentUser.role] || ROLE_CONFIG.admin;
+  if (!cfg.pages.includes(page)) {
+    showLockedMsg();
+    return;
+  }
+  // Update active nav
+  document.querySelectorAll('.nav-item:not(.locked)').forEach(n => n.classList.remove('active'));
+  const navEl = document.getElementById('nav-' + page);
+  if (navEl) navEl.classList.add('active');
+
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+
+  const titles = { dashboard:'Dashboard', students:'Students', hostels:'Hostels & Rooms',
+    allocations:'Allocations', payments:'Payments', checkin:'Check-in / Out',
+    cleaning:'Cleaning', reports:'Reports' };
+  document.getElementById('topbar-title').textContent = titles[page] || page;
+  renderPage(page);
+}
+
+function doLogout() {
+  if (confirm('Sign out of HavenMS?')) {
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('hms_user');
+    window.location.href = 'login.html';
+  }
+}
+
+initSession();
+</script>
+</body>
+</html>

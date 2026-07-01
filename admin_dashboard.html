@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HavenMS — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f5f0;
+    --surface: #ffffff;
+    --border: #e5e5e0;
+    --ink: #1a1a1a;
+    --ink-muted: #6b7280;
+    --accent: #2563eb;
+    --green: #16a34a;
+    --red: #dc2626;
+    --yellow: #d97706;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar { width: 240px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 0; position: fixed; height: 100vh; }
+  .brand { padding: 0 20px 24px; border-bottom: 1px solid var(--border); }
+  .brand-name { font-size: 20px; font-weight: 700; }
+  .brand-name span { color: var(--accent); }
+  .brand-sub { font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
+  .nav-section { padding: 16px 12px 0; }
+  .nav-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-muted); padding: 0 8px; margin-bottom: 6px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; cursor: pointer; font-size: 13.5px; color: var(--ink-muted); transition: all .15s; }
+  .nav-item:hover { background: var(--bg); color: var(--ink); }
+  .nav-item.active { background: #eff6ff; color: var(--accent); font-weight: 600; }
+  .nav-badge { margin-left: auto; background: var(--red); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 20px; }
+  .sidebar-footer { margin-top: auto; padding: 16px 12px; border-top: 1px solid var(--border); }
+  .logout-btn { width: 100%; padding: 9px; border: 1px solid var(--border); background: none; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--ink-muted); display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .logout-btn:hover { background: #fef2f2; color: var(--red); border-color: var(--red); }
+
+  /* MAIN */
+  .main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; }
+  .topbar { padding: 16px 28px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .topbar-title { font-size: 16px; font-weight: 600; }
+  .content { padding: 28px; }
+
+  /* PAGE */
+  .page { display: none; }
+  .page.active { display: block; }
+  .ph { margin-bottom: 24px; }
+  .ph-eyebrow { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); margin-bottom: 6px; }
+  .ph h2 { font-size: 24px; font-weight: 700; }
+  .ph p { color: var(--ink-muted); font-size: 14px; margin-top: 4px; }
+
+  /* STATS */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+  .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-muted); }
+  .stat-value { font-size: 28px; font-weight: 700; margin-top: 6px; }
+  .stat.blue .stat-value { color: var(--accent); }
+  .stat.green .stat-value { color: var(--green); }
+  .stat.yellow .stat-value { color: var(--yellow); }
+  .stat.red .stat-value { color: var(--red); }
+
+  /* PANEL */
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 20px; overflow: hidden; }
+  .panel-head { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .panel-title { font-size: 14px; font-weight: 600; }
+  .panel-body { padding: 16px 20px; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-muted); border-bottom: 1px solid var(--border); background: var(--bg); }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafafa; }
+
+  /* BADGES */
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .b-yellow { background: #fef3c7; color: #92400e; }
+  .b-green { background: #dcfce7; color: #166534; }
+  .b-red { background: #fee2e2; color: #991b1b; }
+  .b-blue { background: #dbeafe; color: #1e40af; }
+  .b-gray { background: #f3f4f6; color: #4b5563; }
+
+  /* BUTTONS */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 7px; font-size: 12.5px; font-weight: 500; cursor: pointer; border: none; transition: all .15s; }
+  .btn-approve { background: #dcfce7; color: #166534; }
+  .btn-approve:hover { background: #bbf7d0; }
+  .btn-reject { background: #fee2e2; color: #991b1b; }
+  .btn-reject:hover { background: #fecaca; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-ghost { background: none; border: 1px solid var(--border); color: var(--ink-muted); }
+  .btn-ghost:hover { background: var(--bg); }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 100; display: none; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: 14px; padding: 28px; width: 480px; max-width: 95vw; }
+  .modal h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .modal p { font-size: 13px; color: var(--ink-muted); margin-bottom: 18px; }
+  .modal .fg { margin-bottom: 14px; }
+  .modal label { font-size: 12px; font-weight: 600; display: block; margin-bottom: 5px; }
+  .modal input, .modal select, .modal textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; font-family: inherit; }
+  .modal textarea { resize: vertical; min-height: 80px; }
+  .modal-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+  .student-info { background: var(--bg); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; font-size: 13px; }
+  .student-info div { margin-bottom: 4px; }
+  .student-info span { font-weight: 600; }
+
+  /* EMPTY */
+  .empty { text-align: center; padding: 40px; color: var(--ink-muted); }
+  .empty .ei { font-size: 32px; margin-bottom: 10px; }
+
+  /* ALERT */
+  .alert { display: none; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+  .alert.on { display: flex; }
+  .alert-success { background: #dcfce7; color: #166534; }
+  .alert-error { background: #fee2e2; color: #991b1b; }
+
+  /* TOAST */
+  .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+  .toast { padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #fff; background: #1a1a1a; box-shadow: 0 4px 12px rgba(0,0,0,.15); animation: slideIn .2s ease; }
+  .toast.error { background: var(--red); }
+  @keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  .filter-row { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; }
+  .filter-row select, .filter-row input { padding: 7px 12px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; font-family: inherit; background: var(--surface); }
+  .loading-row td { text-align: center; color: var(--ink-muted); padding: 30px; }
+  .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .summary-item { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+  .summary-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-muted); }
+  .summary-value { font-size: 22px; font-weight: 700; margin-top: 6px; }
+  .summary-sub { font-size: 12px; color: var(--ink-muted); margin-top: 4px; }
+  .detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .detail-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+  .detail-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-muted); margin-bottom: 4px; }
+  .detail-value { font-size: 13px; color: var(--ink); line-height: 1.5; }
+  .mono { font-family: Consolas, 'Courier New', monospace; }
+
+  @media (max-width: 1100px) {
+    .stats-row,
+    .summary-grid,
+    .detail-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .sidebar { position: static; width: 100%; height: auto; }
+    .main { margin-left: 0; }
+    body { flex-direction: column; }
+    .topbar { padding: 14px 18px; }
+    .content { padding: 18px; }
+    .stats-row,
+    .summary-grid,
+    .detail-grid {
+      grid-template-columns: 1fr;
+    }
+    .filter-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-name">Haven<span>MS</span></div>
+    <div class="brand-sub">Admin Dashboard</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Management</div>
+    <div class="nav-item active" onclick="nav('applications')" id="ni-applications">
+      <span>📋</span> Applications
+      <span class="nav-badge" id="pending-badge" style="display:none">0</span>
+    </div>
+    <div class="nav-item" onclick="nav('students')" id="ni-students">
+      <span>🎓</span> All Students
+    </div>
+    <div class="nav-item" onclick="nav('users')" id="ni-users">
+      <span>Users</span> User Monitoring
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <button class="logout-btn" onclick="doLogout()">⏻ Sign Out</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Applications</div>
+    <span style="font-size:12px;color:var(--ink-muted)" id="topbar-date"></span>
+  </div>
+
+  <div class="content">
+
+    <!-- APPLICATIONS PAGE -->
+    <div class="page active" id="page-applications">
+      <div class="ph">
+        <div class="ph-eyebrow">Student Applications</div>
+        <h2>Hostel Applications</h2>
+        <p>Review, approve or reject student hostel applications.</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat blue"><div class="stat-label">Total</div><div class="stat-value" id="stat-total">0</div></div>
+        <div class="stat yellow"><div class="stat-label">Pending</div><div class="stat-value" id="stat-pending">0</div></div>
+        <div class="stat green"><div class="stat-label">Approved</div><div class="stat-value" id="stat-approved">0</div></div>
+        <div class="stat red"><div class="stat-label">Rejected</div><div class="stat-value" id="stat-rejected">0</div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span class="panel-title">All Applications</span>
+        </div>
+        <div style="padding:14px 20px 0">
+          <div class="filter-row">
+            <select id="filter-status" onchange="loadApplications()">
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <input type="text" id="filter-search" placeholder="Search by name or email..." oninput="loadApplications()" style="flex:1">
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Course</th>
+                <th>Hostel Applied</th>
+                <th>Gender</th>
+                <th>Applied</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="apps-tbody">
+              <tr class="loading-row"><td colspan="7">Loading applications...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALL STUDENTS PAGE -->
+    <div class="page" id="page-students">
+      <div class="ph">
+        <div class="ph-eyebrow">Students</div>
+        <h2>All Students</h2>
+        <p>All registered students in the system.</p>
+      </div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th><th>Name</th><th>Email</th><th>Course</th><th>Year</th><th>Hostel</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="students-tbody">
+              <tr class="loading-row"><td colspan="7">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- USER MONITORING PAGE -->
+    <div class="page" id="page-users">
+      <div class="ph">
+        <div class="ph-eyebrow">Monitoring</div>
+        <h2>User Monitoring</h2>
+        <p>Track staff and student accounts from one live dashboard.</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat blue"><div class="stat-label">Total Users</div><div class="stat-value" id="user-stat-total">0</div></div>
+        <div class="stat green"><div class="stat-label">Students</div><div class="stat-value" id="user-stat-students">0</div></div>
+        <div class="stat yellow"><div class="stat-label">Staff</div><div class="stat-value" id="user-stat-staff">0</div></div>
+        <div class="stat red"><div class="stat-label">Operations Staff</div><div class="stat-value" id="user-stat-ops">0</div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span class="panel-title">Role Summary</span>
+          <button class="btn btn-ghost" onclick="loadUsers()">Refresh Data</button>
+        </div>
+        <div class="panel-body">
+          <div class="summary-grid">
+            <div class="summary-item">
+              <div class="summary-label">Admins</div>
+              <div class="summary-value" id="user-metric-admin">0</div>
+              <div class="summary-sub">System managers with full access.</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-label">Finance</div>
+              <div class="summary-value" id="user-metric-finance">0</div>
+              <div class="summary-sub">Payment and receipt staff accounts.</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-label">Cleaners</div>
+              <div class="summary-value" id="user-metric-cleaner">0</div>
+              <div class="summary-sub">Operations and maintenance staff.</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-label">Pending Students</div>
+              <div class="summary-value" id="user-metric-pending">0</div>
+              <div class="summary-sub">Applications still awaiting review.</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-label">Approved Students</div>
+              <div class="summary-value" id="user-metric-approved">0</div>
+              <div class="summary-sub">Students already assigned and approved.</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-label">Rejected Students</div>
+              <div class="summary-value" id="user-metric-rejected">0</div>
+              <div class="summary-sub">Applications rejected by admin review.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span class="panel-title">User Directory</span>
+        </div>
+        <div style="padding:14px 20px 0">
+          <div class="filter-row">
+            <select id="users-role-filter" onchange="renderUsers()">
+              <option value="">All Roles</option>
+              <option value="student">Student</option>
+              <option value="admin">Admin</option>
+              <option value="finance">Finance</option>
+              <option value="cleaner">Cleaner</option>
+            </select>
+            <select id="users-source-filter" onchange="renderUsers()">
+              <option value="">All Sources</option>
+              <option value="students">Student Profiles</option>
+              <option value="staff">Staff Accounts</option>
+            </select>
+            <select id="users-status-filter" onchange="renderUsers()">
+              <option value="">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <input type="text" id="users-search" placeholder="Search by name or email..." oninput="renderUsers()" style="flex:1">
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Source</th>
+                <th>Status</th>
+                <th>Contact</th>
+                <th>Details</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+              <tr class="loading-row"><td colspan="7">Loading user records...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- APPROVE MODAL -->
+<div class="modal-overlay" id="modal-approve">
+  <div class="modal">
+    <h3>✅ Approve Application</h3>
+    <p>Assign a room and approve this student's hostel application. A confirmation email will be sent automatically.</p>
+    <div class="student-info" id="approve-student-info"></div>
+    <div class="fg">
+  <label>Assign Room Number *</label>
+  <input type="text" id="approve-room" placeholder="e.g. 101, A-204">
+</div>
+<div class="fg">
+  <label>Floor Number *</label>
+  <input type="text" id="approve-floor" placeholder="e.g. Ground Floor, 1st Floor, 2nd Floor">
+</div>
+    <div class="fg">
+      <label>Additional Note <span style="font-weight:400;color:var(--ink-muted)">(Optional — included in email)</span></label>
+      <textarea id="approve-note" placeholder="e.g. Please collect your key from reception by Friday..."></textarea>
+    </div>
+    <div class="alert alert-error" id="approve-alert">⚠ <span id="approve-alert-msg"></span></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModals()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitApprove()">✓ Approve & Send Email</button>
+    </div>
+  </div>
+</div>
+
+<!-- REJECT MODAL -->
+<div class="modal-overlay" id="modal-reject">
+  <div class="modal">
+    <h3>❌ Reject Application</h3>
+    <p>Reject this student's hostel application. A notification email will be sent.</p>
+    <div class="student-info" id="reject-student-info"></div>
+    <div class="fg">
+      <label>Reason for Rejection *</label>
+      <textarea id="reject-reason" placeholder="e.g. No rooms available in requested hostel. Please reapply next semester."></textarea>
+    </div>
+    <div class="alert alert-error" id="reject-alert">⚠ <span id="reject-alert-msg"></span></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModals()">Cancel</button>
+      <button class="btn btn-reject" onclick="submitReject()">Reject Application</button>
+    </div>
+  </div>
+</div>
+
+<!-- USER DETAIL MODAL -->
+<div class="modal-overlay" id="modal-user-detail">
+  <div class="modal" style="width:720px;max-width:96vw">
+    <h3 id="user-detail-title">User Details</h3>
+    <p id="user-detail-subtitle">Live profile information for the selected account.</p>
+    <div class="detail-grid" id="user-detail-grid"></div>
+    <div class="modal-btns">
+      <button class="btn btn-primary" onclick="closeModals()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+// ── AUTH CHECK ──
+const adminUser = sessionStorage.getItem('user');
+if (!adminUser) window.location.href = 'login.html';
+try {
+  const u = JSON.parse(adminUser);
+  if (u.role !== 'admin') window.location.href = 'login.html';
+} catch(e) { window.location.href = 'login.html'; }
+
+// ── STATE ──
+let allApplications = [];
+let selectedStudent = null;
+
+const HOSTEL_NAMES = { 'H-001': 'Sunrise House', 'H-002': 'Oakwood Block', 'H-003': 'Unity Hall' };
+
+// ── NAV ──
+function nav(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('ni-' + page).classList.add('active');
+  document.getElementById('topbar-title').textContent = { applications: 'Applications', students: 'All Students' }[page];
+  if (page === 'students') loadStudents();
+}
+
+// ── LOAD APPLICATIONS ──
+function loadApplications() {
+  const status = document.getElementById('filter-status').value;
+  const search = document.getElementById('filter-search').value.toLowerCase();
+
+  fetch('get_applications.php')
+    .then(res => res.json())
+    .then(data => {
+      allApplications = data;
+
+      // Stats
+      document.getElementById('stat-total').textContent = data.length;
+      document.getElementById('stat-pending').textContent = data.filter(a => a.status === 'pending').length;
+      document.getElementById('stat-approved').textContent = data.filter(a => a.status === 'approved').length;
+      document.getElementById('stat-rejected').textContent = data.filter(a => a.status === 'rejected').length;
+
+      // Pending badge
+      const pendingCount = data.filter(a => a.status === 'pending').length;
+      const badge = document.getElementById('pending-badge');
+      badge.style.display = pendingCount > 0 ? 'inline-flex' : 'none';
+      badge.textContent = pendingCount;
+
+      // Filter
+      let filtered = data;
+      if (status) filtered = filtered.filter(a => a.status === status);
+      if (search) filtered = filtered.filter(a =>
+        a.name.toLowerCase().includes(search) || a.email.toLowerCase().includes(search)
+      );
+
+      renderApplications(filtered);
+    })
+    .catch(() => {
+      document.getElementById('apps-tbody').innerHTML =
+        '<tr class="loading-row"><td colspan="7">Failed to load applications. Check your connection.</td></tr>';
+    });
+}
+
+function renderApplications(apps) {
+  const tbody = document.getElementById('apps-tbody');
+  if (!apps.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="ei">📋</div><p>No applications found.</p></div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = apps.map(a => {
+    const statusBadge = a.status === 'approved' ? 'b-green' : a.status === 'rejected' ? 'b-red' : 'b-yellow';
+    const hostelName = HOSTEL_NAMES[a.hostel_id] || a.hostel_id || '—';
+    const actions = a.status === 'pending'
+      ? `<button class="btn btn-approve" onclick="openApprove(${a.student_id})">✓ Approve</button>
+         <button class="btn btn-reject" style="margin-left:6px" onclick="openReject(${a.student_id})">✕ Reject</button>`
+      : a.status === 'approved'
+        ? `<span style="color:var(--green);font-size:12px">Room ${a.room_number || '—'}</span>`
+        : `<span style="color:var(--red);font-size:12px;cursor:pointer" title="${a.rejection_reason || ''}">View reason</span>`;
+
+    return `<tr>
+      <td>
+        <div style="font-weight:600;font-size:13px">${a.name}</div>
+        <div style="font-size:11px;color:var(--ink-muted)">${a.email}</div>
+      </td>
+      <td>${a.course}<br><span style="font-size:11px;color:var(--ink-muted)">Year ${a.year_of_study}</span></td>
+      <td>${hostelName}</td>
+      <td>${a.gender}</td>
+      <td style="font-size:12px;color:var(--ink-muted)">${a.student_id}</td>
+      <td><span class="badge ${statusBadge}">${a.status.charAt(0).toUpperCase() + a.status.slice(1)}</span></td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── LOAD ALL STUDENTS ──
+function loadStudents() {
+  fetch('get_applications.php')
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.getElementById('students-tbody');
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="ei">🎓</div><p>No students registered yet.</p></div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(s => {
+        const statusBadge = s.status === 'approved' ? 'b-green' : s.status === 'rejected' ? 'b-red' : 'b-yellow';
+        return `<tr>
+          <td style="font-size:12px;color:var(--ink-muted)">#${s.student_id}</td>
+          <td style="font-weight:600">${s.name}</td>
+          <td style="font-size:12px">${s.email}</td>
+          <td>${s.course}</td>
+          <td>Year ${s.year_of_study}</td>
+          <td>${HOSTEL_NAMES[s.hostel_id] || s.hostel_id || '—'}</td>
+          <td><span class="badge ${statusBadge}">${s.status.charAt(0).toUpperCase() + s.status.slice(1)}</span></td>
+        </tr>`;
+      }).join('');
+    });
+}
+
+// ── APPROVE MODAL ──
+function openApprove(studentId) {
+  console.log('studentId passed:', studentId, typeof studentId);
+  console.log('allApplications:', allApplications);
+  selectedStudent = allApplications.find(a => parseInt(a.student_id) === studentId);
+  console.log('selectedStudent:', selectedStudent);
+  if (!selectedStudent) return;
+  document.getElementById('approve-student-info').innerHTML = `
+    <div><span>Name:</span> ${selectedStudent.name}</div>
+    <div><span>Email:</span> ${selectedStudent.email}</div>
+    <div><span>Course:</span> ${selectedStudent.course}, Year ${selectedStudent.year_of_study}</div>
+    <div><span>Hostel Applied:</span> ${HOSTEL_NAMES[selectedStudent.hostel_id] || selectedStudent.hostel_id}</div>`;
+  document.getElementById('approve-room').value = '';
+  document.getElementById('approve-note').value = '';
+  document.getElementById('approve-alert').classList.remove('on');
+  document.getElementById('modal-approve').classList.add('open');
+}
+
+function submitApprove() {
+  const room = document.getElementById('approve-room').value.trim();
+  const floor = document.getElementById('approve-floor').value.trim();
+  if (!room) {
+    document.getElementById('approve-alert').classList.add('on');
+    document.getElementById('approve-alert-msg').textContent = 'Please enter a room number.';
+    return;
+  }
+
+  fetch('approve_application.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `student_id=${selectedStudent.student_id}&room_number=${encodeURIComponent(room)}&floor=${encodeURIComponent(floor)}&note=${encodeURIComponent(note)}`
+  })
+  .then(res => res.text())
+  .then(text => {
+    if (text.trim().includes('success')) {
+      closeModals();
+      toast('Application approved! Confirmation email sent to ' + selectedStudent.email);
+      loadApplications();
+    } else {
+      document.getElementById('approve-alert').classList.add('on');
+      document.getElementById('approve-alert-msg').textContent = text.trim();
+    }
+  })
+  .catch(() => {
+    document.getElementById('approve-alert').classList.add('on');
+    document.getElementById('approve-alert-msg').textContent = 'Network error. Please try again.';
+  });
+}
+
+// ── REJECT MODAL ──
+function openReject(studentId) {
+  selectedStudent = allApplications.find(a => parseInt(a.student_id) === studentId);
+  if (!selectedStudent) return;
+  document.getElementById('reject-student-info').innerHTML = `
+    <div><span>Name:</span> ${selectedStudent.name}</div>
+    <div><span>Email:</span> ${selectedStudent.email}</div>
+    <div><span>Hostel Applied:</span> ${HOSTEL_NAMES[selectedStudent.hostel_id] || selectedStudent.hostel_id}</div>`;
+  document.getElementById('reject-reason').value = '';
+  document.getElementById('reject-alert').classList.remove('on');
+  document.getElementById('modal-reject').classList.add('open');
+}
+
+function submitReject() {
+  const reason = document.getElementById('reject-reason').value.trim();
+  if (!reason) {
+    document.getElementById('reject-alert').classList.add('on');
+    document.getElementById('reject-alert-msg').textContent = 'Please enter a reason for rejection.';
+    return;
+  }
+
+  fetch('reject_application.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `student_id=${selectedStudent.student_id}&reason=${encodeURIComponent(reason)}`
+  })
+  .then(res => res.text())
+  .then(text => {
+    if (text.trim().includes('success')) {
+      closeModals();
+      toast('Application rejected. Notification email sent to ' + selectedStudent.email);
+      loadApplications();
+    } else {
+      document.getElementById('reject-alert').classList.add('on');
+      document.getElementById('reject-alert-msg').textContent = text.trim();
+    }
+  })
+  .catch(() => {
+    document.getElementById('reject-alert').classList.add('on');
+    document.getElementById('reject-alert-msg').textContent = 'Network error. Please try again.';
+  });
+}
+
+function closeModals() {
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+}
+
+// ── UTILS ──
+function toast(msg, type = 'success') {
+  const el = document.createElement('div');
+  el.className = 'toast' + (type === 'error' ? ' error' : '');
+  el.textContent = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+function doLogout() {
+  if (confirm('Sign out of HavenMS?')) {
+    sessionStorage.removeItem('user');
+    window.location.href = 'login.html';
+  }
+}
+
+// ── BOOT ──
+document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('en-KE', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+loadApplications();
+</script>
+<script>
+(() => {
+  let adminAllUsers = [];
+  let adminUserMetrics = {};
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[char]));
+  }
+
+  function formatLabel(value, fallback = 'Unknown') {
+    const normalized = String(value || '').trim();
+    if (!normalized) return fallback;
+
+    return normalized
+      .replace(/_/g, ' ')
+      .split(' ')
+      .filter(Boolean)
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
+  }
+
+  function badgeClassForStatus(status) {
+    const normalized = String(status || '').toLowerCase();
+    if (normalized === 'approved' || normalized === 'active') return 'b-green';
+    if (normalized === 'rejected') return 'b-red';
+    if (normalized === 'pending') return 'b-yellow';
+    return 'b-gray';
+  }
+
+  function badgeClassForRole(role) {
+    const normalized = String(role || '').toLowerCase();
+    if (normalized === 'admin') return 'b-red';
+    if (normalized === 'finance') return 'b-blue';
+    if (normalized === 'cleaner') return 'b-green';
+    if (normalized === 'student') return 'b-yellow';
+    return 'b-gray';
+  }
+
+  function getHostelName(hostelId) {
+    return HOSTEL_NAMES[hostelId] || hostelId || '—';
+  }
+
+  function metricValue(key) {
+    return Number(adminUserMetrics[key] || 0);
+  }
+
+  function renderUserMetrics() {
+    document.getElementById('user-stat-total').textContent = metricValue('total_users');
+    document.getElementById('user-stat-students').textContent = metricValue('total_students');
+    document.getElementById('user-stat-staff').textContent = metricValue('total_staff');
+    document.getElementById('user-stat-ops').textContent = metricValue('finance_count') + metricValue('cleaner_count');
+    document.getElementById('user-metric-admin').textContent = metricValue('admin_count');
+    document.getElementById('user-metric-finance').textContent = metricValue('finance_count');
+    document.getElementById('user-metric-cleaner').textContent = metricValue('cleaner_count');
+    document.getElementById('user-metric-pending').textContent = metricValue('pending_students');
+    document.getElementById('user-metric-approved').textContent = metricValue('approved_students');
+    document.getElementById('user-metric-rejected').textContent = metricValue('rejected_students');
+  }
+
+  function renderApplicationsTable(apps) {
+    const tbody = document.getElementById('apps-tbody');
+    if (!apps.length) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="ei">Applications</div><p>No applications found.</p></div></td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = apps.map(app => {
+      const statusBadge = badgeClassForStatus(app.status);
+      const hostelName = getHostelName(app.hostel_id);
+      const actions = app.status === 'pending'
+        ? `<button class="btn btn-approve" onclick="openApprove(${Number(app.student_id)})">Approve</button>
+           <button class="btn btn-reject" style="margin-left:6px" onclick="openReject(${Number(app.student_id)})">Reject</button>`
+        : app.status === 'approved'
+          ? `<span style="color:var(--green);font-size:12px">Room ${escapeHtml(app.room_number || '—')}</span>`
+          : `<span style="color:var(--red);font-size:12px" title="${escapeHtml(app.rejection_reason || '')}">Rejected</span>`;
+
+      return `<tr>
+        <td>
+          <div style="font-weight:600;font-size:13px">${escapeHtml(app.name)}</div>
+          <div style="font-size:11px;color:var(--ink-muted)">${escapeHtml(app.email)}</div>
+        </td>
+        <td>${escapeHtml(app.course || '—')}<br><span style="font-size:11px;color:var(--ink-muted)">Year ${escapeHtml(app.year_of_study || '—')}</span></td>
+        <td>${escapeHtml(hostelName)}</td>
+        <td>${escapeHtml(app.gender || '—')}</td>
+        <td style="font-size:12px;color:var(--ink-muted)">#${escapeHtml(app.student_id)}</td>
+        <td><span class="badge ${statusBadge}">${escapeHtml(formatLabel(app.status))}</span></td>
+        <td>${actions}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  window.nav = function(page) {
+    document.querySelectorAll('.page').forEach(pageEl => pageEl.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(navEl => navEl.classList.remove('active'));
+    document.getElementById('ni-' + page).classList.add('active');
+    document.getElementById('topbar-title').textContent = {
+      applications: 'Applications',
+      students: 'All Students',
+      users: 'User Monitoring'
+    }[page] || 'Admin Dashboard';
+
+    if (page === 'students') window.loadStudents();
+    if (page === 'users') window.loadUsers();
+  };
+
+  window.loadApplications = function() {
+    const status = document.getElementById('filter-status').value;
+    const search = document.getElementById('filter-search').value.toLowerCase();
+
+    fetch('get_applications.php')
+      .then(res => res.json())
+      .then(data => {
+        allApplications = Array.isArray(data) ? data : [];
+
+        document.getElementById('stat-total').textContent = allApplications.length;
+        document.getElementById('stat-pending').textContent = allApplications.filter(app => app.status === 'pending').length;
+        document.getElementById('stat-approved').textContent = allApplications.filter(app => app.status === 'approved').length;
+        document.getElementById('stat-rejected').textContent = allApplications.filter(app => app.status === 'rejected').length;
+
+        const pendingCount = allApplications.filter(app => app.status === 'pending').length;
+        const badge = document.getElementById('pending-badge');
+        badge.style.display = pendingCount > 0 ? 'inline-flex' : 'none';
+        badge.textContent = pendingCount;
+
+        let filtered = [...allApplications];
+        if (status) filtered = filtered.filter(app => app.status === status);
+        if (search) {
+          filtered = filtered.filter(app =>
+            String(app.name || '').toLowerCase().includes(search) ||
+            String(app.email || '').toLowerCase().includes(search)
+          );
+        }
+
+        renderApplicationsTable(filtered);
+      })
+      .catch(() => {
+        document.getElementById('apps-tbody').innerHTML =
+          '<tr class="loading-row"><td colspan="7">Failed to load applications. Check your connection.</td></tr>';
+      });
+  };
+
+  window.loadStudents = function() {
+    fetch('get_applications.php')
+      .then(res => res.json())
+      .then(data => {
+        const students = Array.isArray(data) ? data : [];
+        const tbody = document.getElementById('students-tbody');
+        if (!students.length) {
+          tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="ei">Students</div><p>No students registered yet.</p></div></td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = students.map(student => `
+          <tr>
+            <td style="font-size:12px;color:var(--ink-muted)">#${escapeHtml(student.student_id)}</td>
+            <td style="font-weight:600">${escapeHtml(student.name)}</td>
+            <td style="font-size:12px">${escapeHtml(student.email)}</td>
+            <td>${escapeHtml(student.course || '—')}</td>
+            <td>Year ${escapeHtml(student.year_of_study || '—')}</td>
+            <td>${escapeHtml(getHostelName(student.hostel_id))}</td>
+            <td><span class="badge ${badgeClassForStatus(student.status)}">${escapeHtml(formatLabel(student.status))}</span></td>
+          </tr>
+        `).join('');
+      })
+      .catch(() => {
+        document.getElementById('students-tbody').innerHTML =
+          '<tr class="loading-row"><td colspan="7">Failed to load student records.</td></tr>';
+      });
+  };
+
+  window.loadUsers = function() {
+    document.getElementById('users-tbody').innerHTML =
+      '<tr class="loading-row"><td colspan="7">Loading user records...</td></tr>';
+
+    fetch('get_user_monitoring.php')
+      .then(res => res.json())
+      .then(payload => {
+        if (!payload || payload.status !== 'success') {
+          throw new Error(payload && payload.message ? payload.message : 'Failed to load user monitoring data.');
+        }
+
+        adminAllUsers = Array.isArray(payload.users) ? payload.users : [];
+        adminUserMetrics = payload.metrics || {};
+        renderUserMetrics();
+        window.renderUsers();
+      })
+      .catch(error => {
+        adminAllUsers = [];
+        adminUserMetrics = {};
+        renderUserMetrics();
+        document.getElementById('users-tbody').innerHTML =
+          `<tr class="loading-row"><td colspan="7">${escapeHtml(error.message || 'Failed to load user records.')}</td></tr>`;
+      });
+  };
+
+  window.renderUsers = function() {
+    const roleFilter = document.getElementById('users-role-filter').value;
+    const sourceFilter = document.getElementById('users-source-filter').value;
+    const statusFilter = document.getElementById('users-status-filter').value;
+    const search = document.getElementById('users-search').value.trim().toLowerCase();
+    const tbody = document.getElementById('users-tbody');
+
+    let filtered = [...adminAllUsers];
+    if (roleFilter) filtered = filtered.filter(user => String(user.role || '').toLowerCase() === roleFilter);
+    if (sourceFilter) filtered = filtered.filter(user => String(user.source || '').toLowerCase() === sourceFilter);
+    if (statusFilter) filtered = filtered.filter(user => String(user.status || '').toLowerCase() === statusFilter);
+    if (search) {
+      filtered = filtered.filter(user =>
+        String(user.name || '').toLowerCase().includes(search) ||
+        String(user.email || '').toLowerCase().includes(search)
+      );
+    }
+
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="ei">Users</div><p>No users matched your filters.</p></div></td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(user => {
+      const role = String(user.role || '').toLowerCase();
+      const status = String(user.status || '').toLowerCase();
+      const details = role === 'student'
+        ? `${escapeHtml(user.course || '—')}<br><span style="font-size:11px;color:var(--ink-muted)">Year ${escapeHtml(user.year_of_study || '—')}</span>`
+        : `${escapeHtml(formatLabel(role))} account<br><span style="font-size:11px;color:var(--ink-muted)">ID ${escapeHtml(user.id)}</span>`;
+
+      return `<tr>
+        <td>
+          <div style="font-weight:600">${escapeHtml(user.name || user.email || 'Unknown User')}</div>
+          <div style="font-size:11px;color:var(--ink-muted)" class="mono">${escapeHtml(user.source === 'staff' ? 'U' : 'S')}-${escapeHtml(user.id)}</div>
+        </td>
+        <td><span class="badge ${badgeClassForRole(role)}">${escapeHtml(formatLabel(role))}</span></td>
+        <td>${escapeHtml(user.source === 'staff' ? 'Staff Account' : 'Student Profile')}</td>
+        <td><span class="badge ${badgeClassForStatus(status)}">${escapeHtml(formatLabel(status, 'Unknown'))}</span></td>
+        <td>${escapeHtml(user.email || '—')}</td>
+        <td>${details}</td>
+        <td><button class="btn btn-ghost" onclick="openUserDetail(${Number(user.id)}, '${user.source === 'staff' ? 'staff' : 'students'}')">View</button></td>
+      </tr>`;
+    }).join('');
+  };
+
+  window.openUserDetail = function(userId, source) {
+    const selectedUser = adminAllUsers.find(user =>
+      Number(user.id) === Number(userId) && String(user.source) === String(source)
+    );
+
+    if (!selectedUser) {
+      window.toast('Unable to find that user record right now.', 'error');
+      return;
+    }
+
+    document.getElementById('user-detail-title').textContent = selectedUser.name || selectedUser.email || 'User Details';
+    document.getElementById('user-detail-subtitle').textContent =
+      `${formatLabel(selectedUser.role)} account from ${selectedUser.source === 'staff' ? 'the staff table' : 'the student table'}.`;
+
+    const detailItems = [
+      ['Role', formatLabel(selectedUser.role)],
+      ['Status', formatLabel(selectedUser.status, 'Unknown')],
+      ['Source', selectedUser.source === 'staff' ? 'Staff Account' : 'Student Profile'],
+      ['Email Address', selectedUser.email || '—'],
+      ['Record ID', String(selectedUser.id || '—')],
+      ['Hostel', getHostelName(selectedUser.hostel_id)]
+    ];
+
+    if (String(selectedUser.role || '').toLowerCase() === 'student') {
+      detailItems.push(['Course', selectedUser.course || '—']);
+      detailItems.push(['Year of Study', selectedUser.year_of_study || '—']);
+      detailItems.push(['Gender', selectedUser.gender || '—']);
+      detailItems.push(['Room Number', selectedUser.room_number || '—']);
+      detailItems.push(['Approved At', selectedUser.approved_at || '—']);
+    }
+
+    document.getElementById('user-detail-grid').innerHTML = detailItems.map(([label, value]) => `
+      <div class="detail-card">
+        <div class="detail-label">${escapeHtml(label)}</div>
+        <div class="detail-value">${escapeHtml(value)}</div>
+      </div>
+    `).join('');
+
+    document.getElementById('modal-user-detail').classList.add('open');
+  };
+
+  window.openApprove = function(studentId) {
+    selectedStudent = allApplications.find(app => Number(app.student_id) === Number(studentId));
+    if (!selectedStudent) return;
+
+    document.getElementById('approve-student-info').innerHTML = `
+      <div><span>Name:</span> ${escapeHtml(selectedStudent.name)}</div>
+      <div><span>Email:</span> ${escapeHtml(selectedStudent.email)}</div>
+      <div><span>Course:</span> ${escapeHtml(selectedStudent.course)}, Year ${escapeHtml(selectedStudent.year_of_study)}</div>
+      <div><span>Hostel Applied:</span> ${escapeHtml(getHostelName(selectedStudent.hostel_id))}</div>`;
+    document.getElementById('approve-room').value = '';
+    document.getElementById('approve-floor').value = '';
+    document.getElementById('approve-note').value = '';
+    document.getElementById('approve-alert').classList.remove('on');
+    document.getElementById('modal-approve').classList.add('open');
+  };
+
+  window.submitApprove = function() {
+    if (!selectedStudent) return;
+
+    const room = document.getElementById('approve-room').value.trim();
+    const floor = document.getElementById('approve-floor').value.trim();
+    const note = document.getElementById('approve-note').value.trim();
+
+    if (!room || !floor) {
+      document.getElementById('approve-alert').classList.add('on');
+      document.getElementById('approve-alert-msg').textContent = 'Please enter both a room number and floor number.';
+      return;
+    }
+
+    const payload = new URLSearchParams({
+      student_id: String(selectedStudent.student_id),
+      room_number: room,
+      floor,
+      note
+    });
+
+    fetch('approve_application.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: payload.toString()
+    })
+      .then(res => res.text())
+      .then(text => {
+        if (text.trim().includes('success')) {
+          window.closeModals();
+          window.toast('Application approved! Confirmation email sent to ' + selectedStudent.email);
+          window.loadApplications();
+          window.loadStudents();
+          window.loadUsers();
+        } else {
+          document.getElementById('approve-alert').classList.add('on');
+          document.getElementById('approve-alert-msg').textContent = text.trim();
+        }
+      })
+      .catch(() => {
+        document.getElementById('approve-alert').classList.add('on');
+        document.getElementById('approve-alert-msg').textContent = 'Network error. Please try again.';
+      });
+  };
+
+  window.openReject = function(studentId) {
+    selectedStudent = allApplications.find(app => Number(app.student_id) === Number(studentId));
+    if (!selectedStudent) return;
+
+    document.getElementById('reject-student-info').innerHTML = `
+      <div><span>Name:</span> ${escapeHtml(selectedStudent.name)}</div>
+      <div><span>Email:</span> ${escapeHtml(selectedStudent.email)}</div>
+      <div><span>Hostel Applied:</span> ${escapeHtml(getHostelName(selectedStudent.hostel_id))}</div>`;
+    document.getElementById('reject-reason').value = '';
+    document.getElementById('reject-alert').classList.remove('on');
+    document.getElementById('modal-reject').classList.add('open');
+  };
+
+  window.submitReject = function() {
+    if (!selectedStudent) return;
+
+    const reason = document.getElementById('reject-reason').value.trim();
+    if (!reason) {
+      document.getElementById('reject-alert').classList.add('on');
+      document.getElementById('reject-alert-msg').textContent = 'Please enter a reason for rejection.';
+      return;
+    }
+
+    const payload = new URLSearchParams({
+      student_id: String(selectedStudent.student_id),
+      reason
+    });
+
+    fetch('reject_application.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: payload.toString()
+    })
+      .then(res => res.text())
+      .then(text => {
+        if (text.trim().includes('success')) {
+          window.closeModals();
+          window.toast('Application rejected. Notification email sent to ' + selectedStudent.email);
+          window.loadApplications();
+          window.loadStudents();
+          window.loadUsers();
+        } else {
+          document.getElementById('reject-alert').classList.add('on');
+          document.getElementById('reject-alert-msg').textContent = text.trim();
+        }
+      })
+      .catch(() => {
+        document.getElementById('reject-alert').classList.add('on');
+        document.getElementById('reject-alert-msg').textContent = 'Network error. Please try again.';
+      });
+  };
+
+  window.closeModals = function() {
+    document.querySelectorAll('.modal-overlay').forEach(modal => modal.classList.remove('open'));
+  };
+
+  window.loadApplications();
+  window.loadUsers();
+})();
+</script>
+</body>
+</html> 

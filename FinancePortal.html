@@ -1,0 +1,2155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HavenMS — Finance Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1208;
+    --ink-muted: #6b5e47;
+    --ink-dim: #a89880;
+    --bg: #faf7f2;
+    --bg-2: #f3ede3;
+    --card: #ffffff;
+    --accent: #b45309;
+    --accent-light: #fef3c7;
+    --accent-mid: #d97706;
+    --accent-bright: #f59e0b;
+    --border: #e8e0d0;
+    --border-2: #d6cbb8;
+    --success: #065f46;
+    --success-light: #d1fae5;
+    --success-mid: #059669;
+    --danger: #991b1b;
+    --danger-light: #fee2e2;
+    --danger-mid: #dc2626;
+    --warn: #92400e;
+    --warn-light: #fef3c7;
+    --blue: #1e40af;
+    --blue-light: #dbeafe;
+    --blue-mid: #2563eb;
+    --purple: #5b21b6;
+    --purple-light: #ede9fe;
+    --shadow: 0 1px 8px rgba(26,18,8,0.07);
+    --shadow-md: 0 4px 20px rgba(26,18,8,0.10);
+    --shadow-lg: 0 8px 40px rgba(26,18,8,0.14);
+    --radius: 12px;
+  }
+
+  html, body { min-height: 100vh; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); font-size: 14px; }
+
+  /* ══════════════ SIDEBAR ══════════════ */
+  .sidebar {
+    width: 232px; min-height: 100vh;
+    background: var(--ink);
+    position: fixed; top: 0; left: 0; bottom: 0;
+    display: flex; flex-direction: column; z-index: 100;
+  }
+
+  .brand {
+    padding: 26px 22px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .brand-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .brand-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-bright));
+    display: flex; align-items: center; justify-content: center; font-size: 17px;
+  }
+  .brand-name { font-family: 'DM Serif Display', serif; font-size: 20px; color: #fff; letter-spacing: -0.3px; }
+  .brand-name span { color: var(--accent-bright); }
+
+  .officer-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 8px; padding: 8px 10px;
+  }
+  .officer-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-bright));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+  .officer-name { font-size: 12.5px; font-weight: 600; color: #fff; }
+  .officer-role { font-size: 10px; color: var(--accent-bright); }
+
+  .nav-section { padding: 16px 0 4px; }
+  .nav-section-label {
+    font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.28); padding: 0 18px 6px; font-weight: 600;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 18px; cursor: pointer; font-size: 13px;
+    color: rgba(255,255,255,0.55); border-left: 2.5px solid transparent;
+    transition: all 0.15s; user-select: none;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.85); }
+  .nav-item.active { color: var(--accent-bright); background: rgba(245,158,11,0.1); border-left-color: var(--accent-bright); font-weight: 500; }
+  .nav-item .ni { font-size: 16px; width: 20px; text-align: center; }
+  .nav-badge {
+    margin-left: auto; background: var(--danger-mid); color: #fff;
+    font-size: 10px; font-weight: 700; border-radius: 10px;
+    padding: 1px 7px; min-width: 18px; text-align: center;
+  }
+  .nav-badge.amber { background: var(--accent-mid); }
+
+  .sidebar-footer {
+    margin-top: auto; padding: 16px 18px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .logout-btn {
+    width: 100%; padding: 9px 14px; background: transparent;
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
+    color: rgba(255,255,255,0.45); font-size: 12.5px;
+    font-family: 'DM Sans', sans-serif; cursor: pointer;
+    display: flex; align-items: center; gap: 8px; transition: all 0.15s;
+  }
+  .logout-btn:hover { border-color: var(--danger-mid); color: #fca5a5; background: rgba(220,38,38,0.1); }
+
+  /* ══════════════ MAIN ══════════════ */
+  .main { margin-left: 232px; display: flex; flex-direction: column; min-height: 100vh; }
+
+  .topbar {
+    height: 58px; background: var(--card); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 30px; position: sticky; top: 0; z-index: 50;
+    box-shadow: var(--shadow);
+  }
+  .topbar-title { font-family: 'DM Serif Display', serif; font-size: 19px; letter-spacing: -0.3px; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .topbar-date { font-size: 12px; color: var(--ink-muted); }
+  .topbar-divider { width: 1px; height: 22px; background: var(--border); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    font-family: 'DM Sans', sans-serif; cursor: pointer; border: none; transition: all 0.18s;
+  }
+  .btn-primary { background: var(--accent-mid); color: #fff; }
+  .btn-primary:hover { background: var(--accent); box-shadow: 0 4px 14px rgba(180,83,9,0.35); }
+  .btn-success { background: var(--success-mid); color: #fff; }
+  .btn-success:hover { background: var(--success); }
+  .btn-danger { background: var(--danger-mid); color: #fff; }
+  .btn-danger:hover { background: var(--danger); }
+  .btn-ghost { background: transparent; color: var(--ink-muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--accent-mid); color: var(--accent); background: var(--accent-light); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-full { width: 100%; }
+  .btn.loading { opacity: 0.7; pointer-events: none; }
+
+  .content { padding: 26px 30px; flex: 1; }
+
+  /* ══════════════ PAGES ══════════════ */
+  .page { display: none; animation: fadeUp 0.22s ease; }
+  .page.active { display: block; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ══════════════ PAGE HEADER ══════════════ */
+  .ph { margin-bottom: 22px; display: flex; align-items: flex-end; justify-content: space-between; }
+  .ph-left .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 1.3px; color: var(--accent-mid); font-weight: 600; margin-bottom: 4px; }
+  .ph-left h2 { font-family: 'DM Serif Display', serif; font-size: 24px; letter-spacing: -0.4px; }
+  .ph-left p { font-size: 13px; color: var(--ink-muted); margin-top: 3px; }
+
+  /* ══════════════ STAT CARDS ══════════════ */
+  .stats-grid { display: grid; gap: 16px; margin-bottom: 22px; }
+  .sg-4 { grid-template-columns: repeat(4, 1fr); }
+  .sg-3 { grid-template-columns: repeat(3, 1fr); }
+  .sg-2 { grid-template-columns: repeat(2, 1fr); }
+
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px 22px;
+    box-shadow: var(--shadow); position: relative; overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .stat-card::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    border-radius: 12px 12px 0 0;
+  }
+  .stat-card.amber::after { background: linear-gradient(90deg, var(--accent), var(--accent-bright)); }
+  .stat-card.green::after { background: var(--success-mid); }
+  .stat-card.red::after { background: var(--danger-mid); }
+  .stat-card.blue::after { background: var(--blue-mid); }
+  .stat-card.purple::after { background: var(--purple); }
+
+  .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--ink-muted); margin-bottom: 8px; font-weight: 600; }
+  .stat-value { font-family: 'DM Serif Display', serif; font-size: 30px; line-height: 1; letter-spacing: -0.5px; }
+  .stat-sub { font-size: 11.5px; color: var(--ink-muted); margin-top: 5px; }
+  .stat-icon { position: absolute; right: 18px; top: 18px; font-size: 22px; opacity: 0.12; }
+
+  /* ══════════════ PANELS ══════════════ */
+  .panel {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+  }
+  .panel-title { font-size: 14px; font-weight: 600; letter-spacing: -0.1px; }
+  .panel-body { padding: 20px; }
+  .panel-body-flush { padding: 0; }
+
+  /* ══════════════ TABLE ══════════════ */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th {
+    text-align: left; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.7px; color: var(--ink-muted); padding: 11px 16px;
+    border-bottom: 1px solid var(--border); font-weight: 600; background: var(--bg);
+  }
+  .data-table td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid #f5f0e8; vertical-align: middle; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: #fffbf4; }
+  .data-table .mono { font-family: 'DM Mono', monospace; font-size: 12px; }
+
+  /* ══════════════ BADGES ══════════════ */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+  }
+  .b-green { background: var(--success-light); color: var(--success); }
+  .b-red { background: var(--danger-light); color: var(--danger-mid); }
+  .b-amber { background: var(--accent-light); color: var(--accent); }
+  .b-blue { background: var(--blue-light); color: var(--blue); }
+  .b-purple { background: var(--purple-light); color: var(--purple); }
+  .b-gray { background: var(--bg-2); color: var(--ink-muted); }
+
+  /* ══════════════ FORM ELEMENTS ══════════════ */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .fg { display: flex; flex-direction: column; gap: 5px; }
+  .fg.full { grid-column: 1 / -1; }
+  .fg label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.3px; color: var(--ink-muted);
+  }
+  .fg input, .fg select, .fg textarea {
+    padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+    font-size: 13.5px; font-family: 'DM Sans', sans-serif; color: var(--ink);
+    background: var(--bg); outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .fg input:focus, .fg select:focus, .fg textarea:focus {
+    border-color: var(--accent-mid); box-shadow: 0 0 0 3px rgba(217,119,6,0.12);
+    background: #fff;
+  }
+  .fg input.err { border-color: var(--danger-mid); }
+  .fg textarea { resize: vertical; min-height: 72px; }
+  .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+  /* ══════════════ LAYOUT GRID ══════════════ */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* ══════════════ MODAL ══════════════ */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(26,18,8,0.5); z-index: 1000;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(3px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card); border-radius: 16px;
+    width: 520px; max-width: 95vw; max-height: 88vh;
+    overflow-y: auto; box-shadow: var(--shadow-lg);
+    animation: modalIn 0.22s ease;
+  }
+  .modal-wide { width: 660px; }
+  @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  .modal-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+  }
+  .modal-title { font-family: 'DM Serif Display', serif; font-size: 18px; }
+  .modal-close {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--bg); border: none; cursor: pointer;
+    font-size: 15px; display: flex; align-items: center; justify-content: center;
+    color: var(--ink-muted); transition: all 0.15s;
+  }
+  .modal-close:hover { background: var(--danger-light); color: var(--danger-mid); }
+  .modal-body { padding: 20px 24px; }
+  .modal-foot { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+
+  /* ══════════════ PROGRESS BAR ══════════════ */
+  .prog-wrap { margin: 6px 0; }
+  .prog-bar { height: 6px; background: var(--bg-2); border-radius: 3px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+  .prog-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-muted); margin-top: 3px; }
+
+  /* ══════════════ SUMMARY ROWS ══════════════ */
+  .sum-table { width: 100%; }
+  .sum-table tr { border-bottom: 1px solid var(--border); }
+  .sum-table tr:last-child { border-bottom: none; }
+  .sum-table td { padding: 10px 4px; font-size: 13px; }
+  .sum-table td:first-child { color: var(--ink-muted); }
+  .sum-table td:last-child { text-align: right; font-weight: 600; }
+
+  /* ══════════════ FILTER BAR ══════════════ */
+  .filter-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .filter-bar input, .filter-bar select {
+    padding: 7px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+    font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--ink);
+    background: var(--bg); outline: none; transition: border-color 0.15s;
+  }
+  .filter-bar input:focus, .filter-bar select:focus { border-color: var(--accent-mid); }
+  .search-wrap { position: relative; }
+  .search-wrap input { padding-left: 30px; width: 210px; }
+  .search-wrap .si { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--ink-dim); font-size: 13px; pointer-events: none; }
+
+  /* ══════════════ TOAST ══════════════ */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
+  .toast {
+    background: var(--ink); color: #fff; padding: 11px 16px; border-radius: 10px;
+    font-size: 13px; display: flex; align-items: center; gap: 9px;
+    box-shadow: var(--shadow-lg); animation: toastIn 0.25s ease; max-width: 320px;
+  }
+  .toast.success { background: var(--success-mid); }
+  .toast.error { background: var(--danger-mid); }
+  .toast.warn { background: var(--accent-mid); }
+  @keyframes toastIn { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
+
+  /* ══════════════ EMPTY STATE ══════════════ */
+  .empty { text-align: center; padding: 40px 20px; color: var(--ink-muted); }
+  .empty .ei { font-size: 40px; margin-bottom: 10px; opacity: 0.4; }
+  .empty p { font-size: 13px; }
+
+  /* ══════════════ RECEIPT PREVIEW ══════════════ */
+  .receipt {
+    background: var(--bg); border: 1.5px dashed var(--border-2);
+    border-radius: var(--radius); padding: 24px;
+    font-family: 'DM Mono', 'Courier New', monospace;
+  }
+  .receipt-header { text-align: center; margin-bottom: 16px; border-bottom: 1px dashed var(--border-2); padding-bottom: 14px; }
+  .receipt-header h3 { font-family: 'DM Serif Display', serif; font-size: 20px; margin-bottom: 4px; }
+  .receipt-header p { font-size: 11.5px; color: var(--ink-muted); }
+  .receipt-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 12.5px; border-bottom: 1px dotted var(--border); }
+  .receipt-row:last-child { border-bottom: none; }
+  .receipt-row .rk { color: var(--ink-muted); }
+  .receipt-row .rv { font-weight: 600; }
+  .receipt-total { display: flex; justify-content: space-between; padding: 10px 0 0; margin-top: 8px; border-top: 2px solid var(--ink); font-size: 15px; font-weight: 700; }
+  .receipt-stamp { text-align: center; margin-top: 16px; font-size: 11px; color: var(--success-mid); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+
+  /* ══════════════ CHART BARS ══════════════ */
+  .chart-wrap { display: flex; align-items: flex-end; gap: 8px; height: 120px; padding: 0 4px; }
+  .chart-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .chart-bar {
+    width: 100%; background: linear-gradient(to top, var(--accent), var(--accent-bright));
+    border-radius: 4px 4px 0 0; min-height: 4px;
+    transition: height 0.6s ease; position: relative;
+  }
+  .chart-bar:hover { opacity: 0.85; }
+  .chart-label { font-size: 10px; color: var(--ink-muted); }
+  .chart-val { font-size: 10px; font-weight: 600; color: var(--accent); }
+
+  /* ══════════════ TABS ══════════════ */
+  .tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 18px; gap: 2px; }
+  .tab { padding: 9px 16px; font-size: 13px; font-weight: 500; color: var(--ink-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s; }
+  .tab.active { color: var(--accent-mid); border-bottom-color: var(--accent-mid); }
+  .tab:hover { color: var(--ink); }
+
+  /* ══════════════ KPI ROW ══════════════ */
+  .kpi-row { display: flex; gap: 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 22px; }
+  .kpi-item { flex: 1; padding: 16px 20px; border-right: 1px solid var(--border); background: var(--card); }
+  .kpi-item:last-child { border-right: none; }
+  .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--ink-muted); margin-bottom: 5px; }
+  .kpi-value { font-family: 'DM Serif Display', serif; font-size: 22px; letter-spacing: -0.3px; }
+  .kpi-change { font-size: 11px; margin-top: 3px; }
+  .kpi-up { color: var(--success-mid); }
+  .kpi-down { color: var(--danger-mid); }
+</style>
+</head>
+<body>
+
+<!-- ════════════ SIDEBAR ════════════ -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-row">
+      <div class="brand-icon">💰</div>
+      <div class="brand-name">Haven<span>MS</span></div>
+    </div>
+    <div class="officer-pill">
+      <div class="officer-avatar" id="sb-avatar">FO</div>
+      <div>
+        <div class="officer-name" id="sb-name">Finance Officer</div>
+        <div class="officer-role">Finance Department</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" onclick="nav('dashboard')" id="ni-dashboard">
+      <span class="ni">⊞</span> Dashboard
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Payments</div>
+    <div class="nav-item" onclick="nav('record')" id="ni-record">
+      <span class="ni">➕</span> Record Payment
+    </div>
+    <div class="nav-item" onclick="nav('payments')" id="ni-payments">
+      <span class="ni">📋</span> All Payments
+    </div>
+    <div class="nav-item" onclick="nav('pending')" id="ni-pending">
+      <span class="ni">⏳</span> Unpaid Students
+      <span class="nav-badge amber" id="unpaid-badge">0</span>
+    </div>
+    <div class="nav-item" onclick="nav('verify')" id="ni-verify">
+      <span class="ni">✅</span> Verify Payment
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Reports</div>
+    <div class="nav-item" onclick="nav('reports')" id="ni-reports">
+      <span class="ni">📊</span> Financial Reports
+    </div>
+    <div class="nav-item" onclick="nav('receipts')" id="ni-receipts">
+      <span class="ni">🧾</span> Receipts
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <button class="logout-btn" onclick="doLogout()">
+      <span>⏻</span> Sign Out
+    </button>
+  </div>
+</aside>
+
+<!-- ════════════ MAIN ════════════ -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Finance Dashboard</div>
+    <div class="topbar-right">
+      <span class="topbar-date" id="topbar-date"></span>
+      <div class="topbar-divider"></div>
+      <button class="btn btn-primary btn-sm" onclick="openModal('modal-record')">+ Record Payment</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="page active" id="page-dashboard">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="eyebrow">Finance Overview</div>
+          <h2 id="dash-greeting">Good morning 👋</h2>
+          <p>Here's the financial summary for HavenMS.</p>
+        </div>
+      </div>
+
+      <!-- KPI strip -->
+      <div class="kpi-row">
+        <div class="kpi-item">
+          <div class="kpi-label">Total Collected</div>
+          <div class="kpi-value" id="kpi-collected">KES 0</div>
+          <div class="kpi-change kpi-up" id="kpi-collected-sub">From paid records</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-label">Outstanding</div>
+          <div class="kpi-value" id="kpi-outstanding">KES 0</div>
+          <div class="kpi-change kpi-down" id="kpi-outstanding-sub">Unpaid balance</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-label">Total Students</div>
+          <div class="kpi-value" id="kpi-students">0</div>
+          <div class="kpi-change">Registered</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-label">Collection Rate</div>
+          <div class="kpi-value" id="kpi-rate">0%</div>
+          <div class="kpi-change" id="kpi-rate-sub">Of expected fees</div>
+        </div>
+      </div>
+
+      <div class="stats-grid sg-4">
+        <div class="stat-card amber">
+          <div class="stat-icon">💰</div>
+          <div class="stat-label">Total Payments</div>
+          <div class="stat-value" id="st-total-pay">0</div>
+          <div class="stat-sub">All records</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon">✅</div>
+          <div class="stat-label">Paid</div>
+          <div class="stat-value" id="st-paid">0</div>
+          <div class="stat-sub">Fully settled</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-icon">❗</div>
+          <div class="stat-label">Unpaid Students</div>
+          <div class="stat-value" id="st-unpaid">0</div>
+          <div class="stat-sub">Awaiting payment</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon">📅</div>
+          <div class="stat-label">This Month</div>
+          <div class="stat-value" id="st-month">0</div>
+          <div class="stat-sub" id="st-month-sub">Payments recorded</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Payment status breakdown -->
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Collection Breakdown</span>
+          </div>
+          <div class="panel-body">
+            <div id="collection-breakdown"><!-- filled by JS --></div>
+          </div>
+        </div>
+
+        <!-- Monthly bar chart -->
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Monthly Collection (KES)</span>
+          </div>
+          <div class="panel-body">
+            <div class="chart-wrap" id="monthly-chart"><!-- filled by JS --></div>
+            <div style="display:flex;justify-content:center;gap:16px;margin-top:10px;font-size:11px;color:var(--ink-muted)">
+              <span>■ <span style="color:var(--accent)">Collected</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent payments -->
+      <div class="panel">
+        <div class="panel-head">
+          <span class="panel-title">Recent Payment Records</span>
+          <button class="btn btn-ghost btn-sm" onclick="nav('payments')">View all →</button>
+        </div>
+        <div class="panel-body-flush">
+          <table class="data-table" id="dash-pay-table">
+            <thead>
+              <tr>
+                <th>Payment ID</th><th>Student</th><th>Amount (KES)</th><th>Receipt No.</th><th>Date</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="dash-pay-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RECORD PAYMENT ══ -->
+    <div class="page" id="page-record">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="eyebrow">Finance</div>
+          <h2>Record New Payment</h2>
+          <p>Enter payment details to record a student's hostel fee transaction.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">Payment Details</span></div>
+          <div class="panel-body">
+            <div class="form-grid">
+              <div class="fg">
+                <label>Student *</label>
+                <select id="rp-student" onchange="loadStudentInfo()">
+                  <option value="">Select student...</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label>Receipt Number *</label>
+                <input type="text" id="rp-receipt" placeholder="e.g. RCP-2026-001">
+              </div>
+              <div class="fg">
+                <label>Amount (KES) *</label>
+                <input type="number" id="rp-amount" placeholder="e.g. 15000" min="1">
+              </div>
+              <div class="fg">
+                <label>Payment Date *</label>
+                <input type="date" id="rp-date">
+              </div>
+              <div class="fg full">
+                <label>Status</label>
+                <select id="rp-status">
+                  <option value="Paid">Paid — Full payment received</option>
+                  <option value="Unpaid">Unpaid — Pending payment</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-ghost" onclick="clearRecordForm()">Clear</button>
+              <button class="btn btn-primary" onclick="recordPayment()">💾 Save Payment</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student preview card -->
+        <div>
+          <div class="panel" id="student-preview" style="display:none">
+            <div class="panel-head"><span class="panel-title">Student Information</span></div>
+            <div class="panel-body">
+              <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+                <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-bright));display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:18px;font-weight:700;color:#fff;flex-shrink:0" id="prev-avatar">?</div>
+                <div>
+                  <div style="font-weight:600;font-size:14px" id="prev-name">—</div>
+                  <div style="font-size:12px;color:var(--ink-muted)" id="prev-course">—</div>
+                </div>
+              </div>
+              <table class="sum-table">
+                <tr><td>Student ID</td><td id="prev-id">—</td></tr>
+                <tr><td>Year</td><td id="prev-year">—</td></tr>
+                <tr><td>Gender</td><td id="prev-gender">—</td></tr>
+                <tr><td>Phone</td><td id="prev-phone">—</td></tr>
+                <tr><td>Email</td><td id="prev-email">—</td></tr>
+                <tr><td>Existing Payments</td><td id="prev-pay-count">—</td></tr>
+                <tr><td>Payment Status</td><td id="prev-pay-status">—</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" id="student-preview-empty">
+            <div class="panel-body">
+              <div class="empty"><div class="ei">👤</div><p>Select a student to preview their information.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ALL PAYMENTS ══ -->
+    <div class="page" id="page-payments">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="eyebrow">Records</div>
+          <h2>All Payment Records</h2>
+          <p>Full list of hostel fee payments from the <code style="font-size:12px;background:var(--bg-2);padding:2px 6px;border-radius:4px">payment</code> table.</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="exportCSV()">⬇ Export CSV</button>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modal-record')">+ Add Payment</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div class="filter-bar">
+            <div class="search-wrap">
+              <span class="si">🔍</span>
+              <input type="text" id="pay-search" placeholder="Search student or receipt..." oninput="renderPayments()">
+            </div>
+            <select id="pay-filter-status" onchange="renderPayments()">
+              <option value="">All Statuses</option>
+              <option value="Paid">Paid</option>
+              <option value="Unpaid">Unpaid</option>
+            </select>
+            <select id="pay-filter-month" onchange="renderPayments()">
+              <option value="">All Months</option>
+              <option value="01">January</option><option value="02">February</option>
+              <option value="03">March</option><option value="04">April</option>
+              <option value="05">May</option><option value="06">June</option>
+              <option value="07">July</option><option value="08">August</option>
+              <option value="09">September</option><option value="10">October</option>
+              <option value="11">November</option><option value="12">December</option>
+            </select>
+          </div>
+          <span class="badge b-blue" id="pay-count-badge">0 records</span>
+        </div>
+        <div class="panel-body-flush">
+          <table class="data-table" id="all-pay-table">
+            <thead>
+              <tr>
+                <th>payment_id</th><th>Student</th><th>Amount (KES)</th>
+                <th>receipt_number</th><th>payment_date</th><th>status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="all-pay-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ UNPAID STUDENTS ══ -->
+    <div class="page" id="page-pending">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="eyebrow">Outstanding</div>
+          <h2>Unpaid Students</h2>
+          <p>Students from <code style="font-size:12px;background:var(--bg-2);padding:2px 6px;border-radius:4px">students</code> with no paid payment record.</p>
+        </div>
+      </div>
+
+      <div class="stats-grid sg-3" style="margin-bottom:20px">
+        <div class="stat-card red">
+          <div class="stat-label">Unpaid</div>
+          <div class="stat-value" id="pend-unpaid">0</div>
+          <div class="stat-sub">No payment on record</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-label">Total Outstanding</div>
+          <div class="stat-value" id="pend-amount" style="font-size:20px;margin-top:4px">KES 0</div>
+          <div class="stat-sub">Estimated at KES 15,000/student</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Paid Students</div>
+          <div class="stat-value" id="pend-paid">0</div>
+          <div class="stat-sub">Fully settled</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span class="panel-title">Students Without Full Payment</span>
+          <div class="filter-bar">
+            <input type="text" id="pend-search" placeholder="Search name..." oninput="renderPending()" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;width:180px">
+          </div>
+        </div>
+        <div class="panel-body-flush">
+          <table class="data-table" id="pend-table">
+            <thead>
+              <tr>
+                <th>student_id</th><th>Name</th><th>Course</th><th>Year</th>
+                <th>Phone</th><th>Payment Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="pend-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ VERIFY PAYMENT ══ -->
+    <div class="page" id="page-verify">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="eyebrow">Verification</div>
+          <h2>Verify Payment</h2>
+          <p>Look up a receipt number and update the payment status in the database.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">🔍 Look Up Receipt</span></div>
+          <div class="panel-body">
+            <div class="fg" style="margin-bottom:14px">
+              <label>Receipt Number</label>
+              <input type="text" id="v-receipt" placeholder="e.g. RCP-2026-001" oninput="lookupReceipt()">
+            </div>
+            <div id="verify-result">
+              <div class="empty"><div class="ei">🧾</div><p>Type a receipt number above to look it up.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">📋 Pending Verifications</span></div>
+          <div class="panel-body-flush">
+            <table class="data-table" id="verify-table">
+              <thead>
+                <tr><th>Receipt</th><th>Student</th><th>Amount</th><th>Date</th><th>Action</th></tr>
+              </thead>
+              <tbody id="verify-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ FINANCIAL REPORTS ══ -->
+    <div class="page" id="page-reports">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="eyebrow">Analytics</div>
+          <h2>Financial Reports</h2>
+          <p>Summary statistics from the <code style="font-size:12px;background:var(--bg-2);padding:2px 6px;border-radius:4px">payment</code> &amp; <code style="font-size:12px;background:var(--bg-2);padding:2px 6px;border-radius:4px">students</code> tables.</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="printReport()">🖨 Print Report</button>
+      </div>
+
+      <div class="grid-2">
+        <!-- Revenue summary -->
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">💰 Revenue Summary</span></div>
+          <div class="panel-body">
+            <table class="sum-table" id="rev-summary"></table>
+          </div>
+        </div>
+
+        <!-- Payment status pie -->
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">📊 Status Distribution</span></div>
+          <div class="panel-body" id="status-dist"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Collections by month -->
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">📅 Collections by Month</span></div>
+          <div class="panel-body-flush">
+            <table class="data-table" id="monthly-table">
+              <thead><tr><th>Month</th><th>Payments</th><th>Amount (KES)</th><th>Progress</th></tr></thead>
+              <tbody id="monthly-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Top payers -->
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">🏆 Students · Payment Status</span></div>
+          <div class="panel-body-flush">
+            <table class="data-table" id="top-table">
+              <thead><tr><th>Name</th><th>Course</th><th>Amount Paid</th><th>Status</th></tr></thead>
+              <tbody id="top-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RECEIPTS ══ -->
+    <div class="page" id="page-receipts">
+      <div class="ph">
+        <div class="ph-left">
+          <div class="eyebrow">Documents</div>
+          <h2>Payment Receipts</h2>
+          <p>Generate and print official payment receipts.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">Generate Receipt</span></div>
+          <div class="panel-body">
+            <div class="fg" style="margin-bottom:14px">
+              <label>Select Payment Record</label>
+              <select id="rec-select" onchange="previewReceipt()">
+                <option value="">Choose a payment...</option>
+              </select>
+            </div>
+            <div id="receipt-preview">
+              <div class="empty"><div class="ei">🧾</div><p>Select a payment above to preview its receipt.</p></div>
+            </div>
+            <div id="receipt-print-btn" style="display:none;margin-top:14px">
+              <button class="btn btn-primary btn-full" onclick="printCurrentReceipt()">🖨 Print Receipt</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">All Receipts</span></div>
+          <div class="panel-body-flush">
+            <table class="data-table" id="receipts-table">
+              <thead>
+                <tr><th>Receipt No.</th><th>Student</th><th>Amount</th><th>Date</th><th></th></tr>
+              </thead>
+              <tbody id="receipts-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ════════════ MODALS ════════════ -->
+
+<!-- Quick Record Payment Modal -->
+<div class="modal-overlay" id="modal-record">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Record Payment</span>
+      <button class="modal-close" onclick="closeModal('modal-record')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg">
+          <label>Student *</label>
+          <select id="m-student"><option value="">Select...</option></select>
+        </div>
+        <div class="fg">
+          <label>Receipt Number *</label>
+          <input type="text" id="m-receipt" placeholder="RCP-2026-001">
+        </div>
+        <div class="fg">
+          <label>Amount (KES) *</label>
+          <input type="number" id="m-amount" placeholder="15000" min="1">
+        </div>
+        <div class="fg">
+          <label>Payment Date *</label>
+          <input type="date" id="m-date">
+        </div>
+        <div class="fg full">
+          <label>Status</label>
+          <select id="m-status">
+            <option value="Paid">Paid</option>
+            <option value="Unpaid">Unpaid</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-record')">Cancel</button>
+      <button class="btn btn-primary" onclick="recordPaymentModal()">💾 Save Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- View/Edit Payment Modal -->
+<div class="modal-overlay" id="modal-view-pay">
+  <div class="modal modal-wide">
+    <div class="modal-head">
+      <span class="modal-title" id="vp-title">Payment Details</span>
+      <button class="modal-close" onclick="closeModal('modal-view-pay')">✕</button>
+    </div>
+    <div class="modal-body" id="vp-body"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-view-pay')">Close</button>
+      <button class="btn btn-success" id="vp-verify-btn" onclick="verifyFromModal()">✓ Mark as Paid</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  DATABASE  — mirrors havendb exactly
+//  Tables: payment (payment_id, student_id, amount,
+//          receipt_number, payment_date, status)
+//          students (student_id, name, course,
+//          year_of_study, gender, phone_no, email, status)
+// ════════════════════════════════════════════════════════
+
+const DB = {
+  students: [
+    { student_id:1, name:'Ryan Rugut',       course:'DBIT',      year_of_study:1, gender:'Male',   phone_no:'0799546109', email:'ryanrugut@gmail.com',            status:'pending'  },
+    { student_id:2, name:'Mark Mutal',       course:'DBIT',      year_of_study:3, gender:'Male',   phone_no:'0799547902', email:'markmutai@gmail.com',            status:'pending'  },
+    { student_id:3, name:'Diana Rugut',      course:'Economics', year_of_study:3, gender:'Female', phone_no:'0702511656', email:'dianarugut95@gmail.com',         status:'approved' },
+    { student_id:4, name:'Jakes Eddie',      course:'DBIT',      year_of_study:1, gender:'Male',   phone_no:'0797262710', email:'abelhina29@gmail.com',           status:'pending'  },
+    { student_id:5, name:'Wilson Kireru',    course:'DBIT',      year_of_study:1, gender:'Male',   phone_no:'0717246677', email:'willy.kireru@gmail.com',         status:'pending'  },
+    { student_id:6, name:'Dennis Brown',     course:'DBIT',      year_of_study:1, gender:'Male',   phone_no:'0731927244', email:'dennisgachie@icloud.com',        status:'pending'  },
+    { student_id:7, name:'Tatiana Gikonyo',  course:'DBIT',      year_of_study:1, gender:'Female', phone_no:'0797081615', email:'gikonyo.tatiana@strathmore.edu', status:'approved' },
+  ],
+
+  // payment table — payment_id, student_id, amount, receipt_number, payment_date, status
+  payments: [
+    { payment_id:1, student_id:3, amount:15000, receipt_number:'RCP-2026-001', payment_date:'2026-03-01', status:'Paid'   },
+    { payment_id:2, student_id:7, amount:15000, receipt_number:'RCP-2026-002', payment_date:'2026-03-05', status:'Paid'   },
+    { payment_id:3, student_id:1, amount:7500,  receipt_number:'RCP-2026-003', payment_date:'2026-03-10', status:'Unpaid' },
+    { payment_id:4, student_id:2, amount:0,     receipt_number:'RCP-2026-004', payment_date:'2026-03-15', status:'Unpaid' },
+  ],
+
+  nextPayId: 5,
+};
+
+// ════════════════════════════════════════════════════════
+//  SESSION
+// ════════════════════════════════════════════════════════
+let currentUser = { name:'Finance Officer', email:'finance@havens.ac.ke', role:'Finance' };
+
+function initSession() {
+  try {
+    const s = sessionStorage.getItem('user');
+    if (s) currentUser = JSON.parse(s);
+  } catch(e) {}
+
+  const initials = currentUser.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('sb-avatar').textContent = initials;
+  document.getElementById('sb-name').textContent = currentUser.name;
+
+  const now = new Date();
+  document.getElementById('topbar-date').textContent = now.toLocaleDateString('en-KE',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  const h = now.getHours();
+  const greet = h<12?'morning':h<17?'afternoon':'evening';
+  document.getElementById('dash-greeting').textContent = `Good ${greet}, ${currentUser.name.split(' ')[0]} 👋`;
+
+  // Set today as default dates
+  const today = now.toISOString().split('T')[0];
+  ['rp-date','m-date'].forEach(id => { const el = document.getElementById(id); if(el) el.value = today; });
+
+  populateStudentDropdowns();
+  populateReceiptDropdown();
+  renderAll();
+}
+
+// ════════════════════════════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════════════════════════════
+const PAGE_TITLES = {
+  dashboard:'Finance Dashboard', record:'Record Payment', payments:'All Payments',
+  pending:'Unpaid Students', verify:'Verify Payment', reports:'Financial Reports', receipts:'Receipts'
+};
+
+function nav(page) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const ni = document.getElementById('ni-'+page);
+  if(ni) ni.classList.add('active');
+  document.getElementById('topbar-title').textContent = PAGE_TITLES[page]||page;
+}
+
+// ════════════════════════════════════════════════════════
+//  RENDER ALL
+// ════════════════════════════════════════════════════════
+function renderAll() {
+  renderDashboard();
+  renderPayments();
+  renderPending();
+  renderVerify();
+  renderReports();
+  renderReceipts();
+  updateBadges();
+}
+
+function updateBadges() {
+  const unpaid = DB.students.filter(s => {
+    const paid = DB.payments.find(p=>p.student_id===s.student_id && p.status==='Paid');
+    return !paid;
+  }).length;
+  document.getElementById('unpaid-badge').textContent = unpaid;
+  document.getElementById('unpaid-badge').style.display = unpaid > 0 ? 'inline-flex' : 'none';
+}
+
+// ════════════════════════════════════════════════════════
+//  DASHBOARD
+// ════════════════════════════════════════════════════════
+function renderDashboard() {
+  const totalPaid     = DB.payments.filter(p=>p.status==='Paid').reduce((s,p)=>s+Number(p.amount),0);
+  const totalUnpaid   = DB.payments.filter(p=>p.status==='Unpaid').reduce((s,p)=>s+Number(p.amount),0);
+  const paidCount     = DB.payments.filter(p=>p.status==='Paid').length;
+  const unpaidStuds   = DB.students.filter(s=>!DB.payments.find(p=>p.student_id===s.student_id&&p.status==='Paid')).length;
+  const totalStudents = DB.students.length;
+  const rate          = totalStudents ? Math.round((totalStudents-unpaidStuds)/totalStudents*100) : 0;
+
+  // KPIs
+  document.getElementById('kpi-collected').textContent = 'KES ' + totalPaid.toLocaleString();
+  document.getElementById('kpi-outstanding').textContent = 'KES ' + (unpaidStuds * 15000).toLocaleString();
+  document.getElementById('kpi-students').textContent = totalStudents;
+  document.getElementById('kpi-rate').textContent = rate + '%';
+  document.getElementById('kpi-outstanding-sub').textContent = unpaidStuds + ' student(s) unpaid';
+
+  // Stats
+  document.getElementById('st-total-pay').textContent = DB.payments.length;
+  document.getElementById('st-paid').textContent = paidCount;
+  document.getElementById('st-unpaid').textContent = unpaidStuds;
+
+  const thisMonth = new Date().toISOString().slice(0,7);
+  const monthCount = DB.payments.filter(p=>p.payment_date.startsWith(thisMonth)).length;
+  document.getElementById('st-month').textContent = monthCount;
+  document.getElementById('st-month-sub').textContent = new Date().toLocaleString('en-KE',{month:'long',year:'numeric'});
+
+  // Collection breakdown
+  const paidPct = DB.payments.length ? Math.round(paidCount/DB.payments.length*100) : 0;
+  const unpaidPct = 100 - paidPct;
+  document.getElementById('collection-breakdown').innerHTML = `
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:13px;font-weight:500">Paid</span>
+        <span style="font-size:12px;color:var(--ink-muted)">${paidCount} payments · KES ${totalPaid.toLocaleString()}</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${paidPct}%;background:var(--success-mid)"></div></div>
+      <div class="prog-label"><span>${paidPct}%</span></div>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:13px;font-weight:500">Unpaid</span>
+        <span style="font-size:12px;color:var(--ink-muted)">${DB.payments.filter(p=>p.status==='Unpaid').length} payments</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${unpaidPct}%;background:var(--danger-mid)"></div></div>
+      <div class="prog-label"><span>${unpaidPct}%</span></div>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;font-size:12.5px">
+      <span style="color:var(--ink-muted)">Total collected</span>
+      <strong style="color:var(--success-mid)">KES ${totalPaid.toLocaleString()}</strong>
+    </div>`;
+
+  // Monthly chart — group by month
+  const months = {};
+  DB.payments.filter(p=>p.status==='Paid').forEach(p => {
+    const m = p.payment_date.slice(0,7);
+    months[m] = (months[m]||0) + Number(p.amount);
+  });
+  const mKeys = Object.keys(months).sort().slice(-6);
+  const maxVal = Math.max(...mKeys.map(m=>months[m]), 1);
+  const mNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('monthly-chart').innerHTML = mKeys.length
+    ? mKeys.map(m => {
+        const pct = Math.round(months[m]/maxVal*100);
+        const label = mNames[parseInt(m.slice(5,7))-1] + ' ' + m.slice(2,4);
+        return `<div class="chart-bar-col">
+          <div class="chart-val">KES ${(months[m]/1000).toFixed(0)}k</div>
+          <div class="chart-bar" style="height:${pct}%"></div>
+          <div class="chart-label">${label}</div>
+        </div>`;
+      }).join('')
+    : '<div class="empty" style="width:100%"><div class="ei">📊</div><p>No paid records yet.</p></div>';
+
+  // Recent payments table
+  const recent = [...DB.payments].reverse().slice(0,5);
+  document.getElementById('dash-pay-tbody').innerHTML = recent.map(p => {
+    const st = DB.students.find(s=>s.student_id===p.student_id);
+    return `<tr>
+      <td><span class="badge b-blue">PAY-${String(p.payment_id).padStart(3,'0')}</span></td>
+      <td><strong>${st?.name||'—'}</strong></td>
+      <td><strong>KES ${Number(p.amount).toLocaleString()}</strong></td>
+      <td class="mono">${p.receipt_number}</td>
+      <td>${fmtDate(p.payment_date)}</td>
+      <td>${statusBadge(p.status)}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="6"><div class="empty"><p>No payment records yet.</p></div></td></tr>';
+}
+
+// ════════════════════════════════════════════════════════
+//  ALL PAYMENTS PAGE
+// ════════════════════════════════════════════════════════
+function renderPayments() {
+  const search  = (document.getElementById('pay-search')?.value||'').toLowerCase();
+  const status  = document.getElementById('pay-filter-status')?.value||'';
+  const month   = document.getElementById('pay-filter-month')?.value||'';
+
+  let list = DB.payments.filter(p => {
+    const st = DB.students.find(s=>s.student_id===p.student_id);
+    const matchSearch = !search ||
+      (st?.name||'').toLowerCase().includes(search) ||
+      p.receipt_number.toLowerCase().includes(search);
+    const matchStatus = !status || p.status === status;
+    const matchMonth  = !month  || p.payment_date.slice(5,7) === month;
+    return matchSearch && matchStatus && matchMonth;
+  });
+
+  document.getElementById('pay-count-badge').textContent = list.length + ' record' + (list.length!==1?'s':'');
+
+  document.getElementById('all-pay-tbody').innerHTML = list.length ? [...list].reverse().map(p => {
+    const st = DB.students.find(s=>s.student_id===p.student_id);
+    return `<tr>
+      <td><span class="badge b-blue">${p.payment_id}</span></td>
+      <td>
+        <div style="font-weight:500">${st?.name||'Unknown'}</div>
+        <div style="font-size:11px;color:var(--ink-muted)">${st?.course||''} · Yr ${st?.year_of_study||''}</div>
+      </td>
+      <td><strong>KES ${Number(p.amount).toLocaleString()}</strong></td>
+      <td class="mono">${p.receipt_number}</td>
+      <td>${fmtDate(p.payment_date)}</td>
+      <td>${statusBadge(p.status)}</td>
+      <td>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick="viewPayment(${p.payment_id})">View</button>
+          ${p.status==='Unpaid'?`<button class="btn btn-success btn-sm" onclick="markPaid(${p.payment_id})">✓ Mark Paid</button>`:''}
+          <button class="btn btn-danger btn-sm" onclick="deletePayment(${p.payment_id})">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="7"><div class="empty"><div class="ei">💳</div><p>No payment records found.</p></div></td></tr>';
+}
+
+// ════════════════════════════════════════════════════════
+//  UNPAID STUDENTS
+// ════════════════════════════════════════════════════════
+function renderPending() {
+  const search = (document.getElementById('pend-search')?.value||'').toLowerCase();
+  const FEE = 15000;
+
+  // Students who DON'T have a Paid record
+  const unpaidStudents = DB.students.filter(s => {
+    const hasPaid = DB.payments.find(p=>p.student_id===s.student_id&&p.status==='Paid');
+    return !hasPaid;
+  });
+  const paidStudents = DB.students.filter(s =>
+    DB.payments.find(p=>p.student_id===s.student_id&&p.status==='Paid')
+  );
+
+  const filtered = unpaidStudents.filter(s =>
+    !search || s.name.toLowerCase().includes(search)
+  );
+
+  document.getElementById('pend-unpaid').textContent = unpaidStudents.length;
+  document.getElementById('pend-amount').textContent = 'KES ' + (unpaidStudents.length * FEE).toLocaleString();
+  document.getElementById('pend-paid').textContent = paidStudents.length;
+
+  document.getElementById('pend-tbody').innerHTML = filtered.length ? filtered.map(s => {
+    const payRec = DB.payments.find(p=>p.student_id===s.student_id);
+    const payStatus = payRec ? `<span class="badge b-amber">${payRec.status}</span>` : `<span class="badge b-red">No Record</span>`;
+    return `<tr>
+      <td><span class="badge b-gray">${s.student_id}</span></td>
+      <td>
+        <div style="font-weight:500">${s.name}</div>
+        <div style="font-size:11px;color:var(--ink-muted)">${s.email}</div>
+      </td>
+      <td>${s.course}</td>
+      <td>Year ${s.year_of_study}</td>
+      <td>${s.phone_no}</td>
+      <td>${payStatus}</td>
+      <td>
+        <button class="btn btn-primary btn-sm" onclick="quickRecord(${s.student_id})">+ Record Payment</button>
+      </td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="7"><div class="empty"><div class="ei">🎉</div><p>All students have payment records!</p></div></td></tr>';
+}
+
+// ════════════════════════════════════════════════════════
+//  VERIFY PAYMENT
+// ════════════════════════════════════════════════════════
+function renderVerify() {
+  // Show all unpaid payments in the side table
+  const unpaid = DB.payments.filter(p=>p.status==='Unpaid');
+  document.getElementById('verify-tbody').innerHTML = unpaid.length ? unpaid.map(p => {
+    const st = DB.students.find(s=>s.student_id===p.student_id);
+    return `<tr>
+      <td class="mono" style="font-size:12px">${p.receipt_number}</td>
+      <td>${st?.name||'—'}</td>
+      <td>KES ${Number(p.amount).toLocaleString()}</td>
+      <td>${fmtDate(p.payment_date)}</td>
+      <td><button class="btn btn-success btn-sm" onclick="markPaid(${p.payment_id})">✓ Verify</button></td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="5"><div class="empty"><div class="ei">✅</div><p>No pending verifications.</p></div></td></tr>';
+}
+
+function lookupReceipt() {
+  const val = document.getElementById('v-receipt').value.trim().toUpperCase();
+  const result = document.getElementById('verify-result');
+  if (!val) {
+    result.innerHTML = '<div class="empty"><div class="ei">🧾</div><p>Type a receipt number above.</p></div>';
+    return;
+  }
+  const p = DB.payments.find(pay=>pay.receipt_number.toUpperCase()===val);
+  if (!p) {
+    result.innerHTML = `<div style="background:var(--danger-light);border:1px solid #fca5a5;border-radius:8px;padding:14px;font-size:13px;color:var(--danger-mid)">
+      ⚠ Receipt <strong>${val}</strong> not found in the database.
+    </div>`;
+    return;
+  }
+  const st = DB.students.find(s=>s.student_id===p.student_id);
+  result.innerHTML = `
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px">
+      <table class="sum-table" style="margin-bottom:14px">
+        <tr><td>Payment ID</td><td>${p.payment_id}</td></tr>
+        <tr><td>Receipt No.</td><td class="mono">${p.receipt_number}</td></tr>
+        <tr><td>Student</td><td>${st?.name||'—'}</td></tr>
+        <tr><td>Amount</td><td><strong>KES ${Number(p.amount).toLocaleString()}</strong></td></tr>
+        <tr><td>Date</td><td>${fmtDate(p.payment_date)}</td></tr>
+        <tr><td>Status</td><td>${statusBadge(p.status)}</td></tr>
+      </table>
+      ${p.status==='Unpaid'
+        ? `<button class="btn btn-success btn-full" onclick="markPaid(${p.payment_id});document.getElementById('v-receipt').value='';lookupReceipt()">✓ Mark as Paid</button>`
+        : `<div style="text-align:center;color:var(--success-mid);font-weight:600;font-size:13px">✓ This payment is already verified as Paid.</div>`
+      }
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+//  REPORTS
+// ════════════════════════════════════════════════════════
+function renderReports() {
+  const totalPaid   = DB.payments.filter(p=>p.status==='Paid').reduce((s,p)=>s+Number(p.amount),0);
+  const paidCount   = DB.payments.filter(p=>p.status==='Paid').length;
+  const unpaidCount = DB.payments.filter(p=>p.status==='Unpaid').length;
+  const FEE = 15000;
+  const expected = DB.students.length * FEE;
+
+  // Revenue summary table
+  document.getElementById('rev-summary').innerHTML = `
+    <tr><td>Total Students</td><td>KES — (${DB.students.length} students)</td></tr>
+    <tr><td>Expected Revenue</td><td>KES ${expected.toLocaleString()}</td></tr>
+    <tr><td>Total Collected</td><td style="color:var(--success-mid)">KES ${totalPaid.toLocaleString()}</td></tr>
+    <tr><td>Outstanding</td><td style="color:var(--danger-mid)">KES ${(expected-totalPaid).toLocaleString()}</td></tr>
+    <tr><td>Paid Records</td><td>${paidCount} payment(s)</td></tr>
+    <tr><td>Unpaid Records</td><td>${unpaidCount} payment(s)</td></tr>
+    <tr><td>Collection Rate</td><td><strong>${expected?Math.round(totalPaid/expected*100):0}%</strong></td></tr>`;
+
+  // Status distribution
+  const total = DB.payments.length || 1;
+  document.getElementById('status-dist').innerHTML = `
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:13px;display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:var(--success-mid);display:inline-block"></span>Paid</span>
+        <span style="font-size:12px;font-weight:600">${paidCount} (${Math.round(paidCount/total*100)}%)</span>
+      </div>
+      <div class="prog-bar" style="height:10px"><div class="prog-fill" style="width:${Math.round(paidCount/total*100)}%;background:var(--success-mid)"></div></div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:13px;display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:var(--danger-mid);display:inline-block"></span>Unpaid</span>
+        <span style="font-size:12px;font-weight:600">${unpaidCount} (${Math.round(unpaidCount/total*100)}%)</span>
+      </div>
+      <div class="prog-bar" style="height:10px"><div class="prog-fill" style="width:${Math.round(unpaidCount/total*100)}%;background:var(--danger-mid)"></div></div>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:12px;text-align:center;font-size:13px;color:var(--ink-muted)">
+      ${total} total payment record(s)
+    </div>`;
+
+  // Monthly breakdown
+  const months = {};
+  DB.payments.filter(p=>p.status==='Paid').forEach(p=>{
+    const m = p.payment_date.slice(0,7);
+    if(!months[m]) months[m]={count:0,amount:0};
+    months[m].count++;
+    months[m].amount+=Number(p.amount);
+  });
+  const mNames = {
+    '01':'January','02':'February','03':'March','04':'April',
+    '05':'May','06':'June','07':'July','08':'August',
+    '09':'September','10':'October','11':'November','12':'December'
+  };
+  const maxAmt = Math.max(...Object.values(months).map(m=>m.amount), 1);
+  document.getElementById('monthly-tbody').innerHTML = Object.keys(months).sort().reverse().map(m => {
+    const d = months[m];
+    const pct = Math.round(d.amount/maxAmt*100);
+    const [year,mon] = m.split('-');
+    return `<tr>
+      <td>${mNames[mon]} ${year}</td>
+      <td>${d.count}</td>
+      <td><strong>KES ${d.amount.toLocaleString()}</strong></td>
+      <td style="width:160px">
+        <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:var(--accent-mid)"></div></div>
+      </td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="4"><div class="empty"><p>No paid records yet.</p></div></td></tr>';
+
+  // Students payment status
+  document.getElementById('top-tbody').innerHTML = DB.students.map(s => {
+    const pays = DB.payments.filter(p=>p.student_id===s.student_id);
+    const paid = pays.filter(p=>p.status==='Paid').reduce((a,p)=>a+Number(p.amount),0);
+    const hasPaid = pays.some(p=>p.status==='Paid');
+    return `<tr>
+      <td><strong>${s.name}</strong></td>
+      <td>${s.course}</td>
+      <td>KES ${paid.toLocaleString()}</td>
+      <td>${hasPaid?'<span class="badge b-green">✓ Paid</span>':'<span class="badge b-red">Unpaid</span>'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════
+//  RECEIPTS
+// ════════════════════════════════════════════════════════
+function renderReceipts() {
+  const paid = DB.payments.filter(p=>p.status==='Paid');
+  document.getElementById('receipts-tbody').innerHTML = paid.length ? paid.map(p=>{
+    const st = DB.students.find(s=>s.student_id===p.student_id);
+    return `<tr>
+      <td class="mono" style="font-size:12px">${p.receipt_number}</td>
+      <td>${st?.name||'—'}</td>
+      <td>KES ${Number(p.amount).toLocaleString()}</td>
+      <td>${fmtDate(p.payment_date)}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="document.getElementById('rec-select').value=${p.payment_id};previewReceipt()">Preview</button></td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="5"><div class="empty"><p>No paid receipts yet.</p></div></td></tr>';
+}
+
+function populateReceiptDropdown() {
+  const sel = document.getElementById('rec-select');
+  if(!sel) return;
+  const paid = DB.payments.filter(p=>p.status==='Paid');
+  sel.innerHTML = '<option value="">Choose a payment...</option>' +
+    paid.map(p=>{
+      const st = DB.students.find(s=>s.student_id===p.student_id);
+      return `<option value="${p.payment_id}">${p.receipt_number} — ${st?.name||'?'}</option>`;
+    }).join('');
+}
+
+let currentReceiptId = null;
+function previewReceipt() {
+  const id = parseInt(document.getElementById('rec-select').value);
+  const preview = document.getElementById('receipt-preview');
+  const printBtn = document.getElementById('receipt-print-btn');
+  if(!id) {
+    preview.innerHTML = '<div class="empty"><div class="ei">🧾</div><p>Select a payment above.</p></div>';
+    printBtn.style.display='none'; return;
+  }
+  const p  = DB.payments.find(pay=>pay.payment_id===id);
+  const st = DB.students.find(s=>s.student_id===p?.student_id);
+  if(!p||!st){ preview.innerHTML='<div class="empty"><p>Not found.</p></div>'; return; }
+  currentReceiptId = id;
+  preview.innerHTML = `
+    <div class="receipt">
+      <div class="receipt-header">
+        <h3>🏠 HavenMS</h3>
+        <p>Hostel Management System<br>Official Payment Receipt</p>
+      </div>
+      <div class="receipt-row"><span class="rk">Receipt No.</span><span class="rv">${p.receipt_number}</span></div>
+      <div class="receipt-row"><span class="rk">Payment ID</span><span class="rv">PAY-${String(p.payment_id).padStart(3,'0')}</span></div>
+      <div class="receipt-row"><span class="rk">Student Name</span><span class="rv">${st.name}</span></div>
+      <div class="receipt-row"><span class="rk">Student ID</span><span class="rv">${st.student_id}</span></div>
+      <div class="receipt-row"><span class="rk">Course</span><span class="rv">${st.course} · Year ${st.year_of_study}</span></div>
+      <div class="receipt-row"><span class="rk">Payment Date</span><span class="rv">${fmtDate(p.payment_date)}</span></div>
+      <div class="receipt-row"><span class="rk">Description</span><span class="rv">Hostel Accommodation Fee</span></div>
+      <div class="receipt-total"><span>TOTAL PAID</span><span>KES ${Number(p.amount).toLocaleString()}</span></div>
+      <div class="receipt-stamp">✓ Payment Verified</div>
+    </div>`;
+  printBtn.style.display='block';
+}
+
+function printCurrentReceipt() {
+  window.print();
+  toast('Receipt sent to printer.');
+}
+
+// ════════════════════════════════════════════════════════
+//  RECORD PAYMENT
+// ════════════════════════════════════════════════════════
+function populateStudentDropdowns() {
+  const opts = '<option value="">Select student...</option>' +
+    DB.students.map(s=>`<option value="${s.student_id}">${s.name} (ID: ${s.student_id})</option>`).join('');
+  ['rp-student','m-student'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+}
+
+function loadStudentInfo() {
+  const id = parseInt(document.getElementById('rp-student').value);
+  const preview = document.getElementById('student-preview');
+  const empty   = document.getElementById('student-preview-empty');
+  if(!id){ preview.style.display='none'; empty.style.display=''; return; }
+  const st = DB.students.find(s=>s.student_id===id);
+  if(!st){ preview.style.display='none'; empty.style.display=''; return; }
+  const pays = DB.payments.filter(p=>p.student_id===id);
+  const hasPaid = pays.some(p=>p.status==='Paid');
+  const initials = st.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('prev-avatar').textContent = initials;
+  document.getElementById('prev-name').textContent = st.name;
+  document.getElementById('prev-course').textContent = st.course + ' · Year ' + st.year_of_study;
+  document.getElementById('prev-id').textContent = st.student_id;
+  document.getElementById('prev-year').textContent = 'Year ' + st.year_of_study;
+  document.getElementById('prev-gender').textContent = st.gender;
+  document.getElementById('prev-phone').textContent = st.phone_no;
+  document.getElementById('prev-email').textContent = st.email;
+  document.getElementById('prev-pay-count').textContent = pays.length + ' record(s)';
+  document.getElementById('prev-pay-status').innerHTML = hasPaid
+    ? '<span class="badge b-green">Paid</span>'
+    : pays.length ? '<span class="badge b-amber">Unpaid</span>' : '<span class="badge b-red">No Record</span>';
+  preview.style.display=''; empty.style.display='none';
+}
+
+function recordPayment() {
+  const sid     = parseInt(document.getElementById('rp-student').value);
+  const receipt = document.getElementById('rp-receipt').value.trim();
+  const amount  = parseFloat(document.getElementById('rp-amount').value);
+  const date    = document.getElementById('rp-date').value;
+  const status  = document.getElementById('rp-status').value;
+  if(!sid)     { toast('Please select a student.','error'); return; }
+  if(!receipt) { toast('Receipt number is required.','error'); return; }
+  if(!amount||amount<=0) { toast('Enter a valid amount.','error'); return; }
+  if(!date)    { toast('Payment date is required.','error'); return; }
+  if(DB.payments.find(p=>p.receipt_number===receipt)) { toast('Receipt number already exists.','error'); return; }
+
+  addPaymentRecord({student_id:sid,amount,receipt_number:receipt,payment_date:date,status});
+  clearRecordForm();
+  toast('Payment recorded successfully! ✓');
+  nav('payments');
+}
+
+function recordPaymentModal() {
+  const sid     = parseInt(document.getElementById('m-student').value);
+  const receipt = document.getElementById('m-receipt').value.trim();
+  const amount  = parseFloat(document.getElementById('m-amount').value);
+  const date    = document.getElementById('m-date').value;
+  const status  = document.getElementById('m-status').value;
+  if(!sid||!receipt||!amount||amount<=0||!date) { toast('Please fill all required fields.','error'); return; }
+  if(DB.payments.find(p=>p.receipt_number===receipt)) { toast('Receipt number already exists.','error'); return; }
+  addPaymentRecord({student_id:sid,amount,receipt_number:receipt,payment_date:date,status});
+  closeModal('modal-record');
+  document.getElementById('m-receipt').value=''; document.getElementById('m-amount').value='';
+  toast('Payment recorded! ✓');
+}
+
+function addPaymentRecord(data) {
+  DB.payments.push({ payment_id: DB.nextPayId++, ...data });
+  renderAll();
+  populateStudentDropdowns();
+  populateReceiptDropdown();
+}
+
+function clearRecordForm() {
+  ['rp-student','rp-receipt','rp-amount'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('student-preview').style.display='none';
+  document.getElementById('student-preview-empty').style.display='';
+}
+
+function quickRecord(studentId) {
+  const el = document.getElementById('rp-student');
+  if(el){ el.value = studentId; loadStudentInfo(); }
+  nav('record');
+}
+
+// ════════════════════════════════════════════════════════
+//  PAYMENT ACTIONS
+// ════════════════════════════════════════════════════════
+function markPaid(payId) {
+  const p = DB.payments.find(pay=>pay.payment_id===payId);
+  if(!p) return;
+  p.status = 'Paid';
+  renderAll();
+  toast('Payment verified as Paid ✓');
+}
+
+function deletePayment(payId) {
+  if(!confirm('Delete this payment record?')) return;
+  DB.payments = DB.payments.filter(p=>p.payment_id!==payId);
+  renderAll();
+  toast('Payment record deleted.','warn');
+}
+
+function viewPayment(payId) {
+  const p  = DB.payments.find(pay=>pay.payment_id===payId);
+  const st = DB.students.find(s=>s.student_id===p?.student_id);
+  if(!p) return;
+  document.getElementById('vp-title').textContent = 'Payment · ' + p.receipt_number;
+  document.getElementById('vp-body').innerHTML = `
+    <table class="sum-table">
+      <tr><td>Payment ID</td><td>PAY-${String(p.payment_id).padStart(3,'0')}</td></tr>
+      <tr><td>Receipt Number</td><td class="mono">${p.receipt_number}</td></tr>
+      <tr><td>Student</td><td><strong>${st?.name||'—'}</strong> (ID: ${p.student_id})</td></tr>
+      <tr><td>Course</td><td>${st?.course||'—'} · Year ${st?.year_of_study||'—'}</td></tr>
+      <tr><td>Amount</td><td><strong style="font-size:16px">KES ${Number(p.amount).toLocaleString()}</strong></td></tr>
+      <tr><td>Payment Date</td><td>${fmtDate(p.payment_date)}</td></tr>
+      <tr><td>Status</td><td>${statusBadge(p.status)}</td></tr>
+    </table>`;
+  const verifyBtn = document.getElementById('vp-verify-btn');
+  verifyBtn.style.display = p.status==='Unpaid' ? 'inline-flex' : 'none';
+  verifyBtn.onclick = () => { markPaid(payId); closeModal('modal-view-pay'); };
+  openModal('modal-view-pay');
+}
+
+// ════════════════════════════════════════════════════════
+//  EXPORT CSV
+// ════════════════════════════════════════════════════════
+function exportCSV() {
+  const rows = [['payment_id','student_id','student_name','amount','receipt_number','payment_date','status']];
+  DB.payments.forEach(p=>{
+    const st = DB.students.find(s=>s.student_id===p.student_id);
+    rows.push([p.payment_id,p.student_id,st?.name||'',p.amount,p.receipt_number,p.payment_date,p.status]);
+  });
+  const csv = rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'havenms_payments_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  toast('CSV exported!');
+}
+
+function printReport() { window.print(); toast('Report sent to printer.'); }
+
+// ════════════════════════════════════════════════════════
+//  MODALS / UTILS
+// ════════════════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); });
+});
+
+function statusBadge(s) {
+  if(s==='Paid')   return '<span class="badge b-green">✓ Paid</span>';
+  if(s==='Unpaid') return '<span class="badge b-red">✗ Unpaid</span>';
+  return `<span class="badge b-gray">${s}</span>`;
+}
+
+function fmtDate(d) {
+  if(!d) return '—';
+  try { return new Date(d).toLocaleDateString('en-KE',{day:'numeric',month:'short',year:'numeric'}); }
+  catch(e) { return d; }
+}
+
+function toast(msg, type='success') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = (type==='success'?'✓':type==='error'?'✕':'⚠') + ' ' + msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(()=>el.remove(), 3400);
+}
+
+function doLogout() {
+  if(confirm('Sign out of HavenMS?')) {
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('hms_user');
+    window.location.href = 'login.html';
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  BOOT
+// ════════════════════════════════════════════════════════
+initSession();
+</script>
+<script>
+function financeApiRequest(url, options) {
+  return fetch(url, options || {})
+    .then(async response => {
+      let data;
+      try {
+        data = await response.json();
+      } catch (error) {
+        throw new Error('The server returned an invalid response.');
+      }
+
+      if (!response.ok || data.status !== 'success') {
+        throw new Error(data && data.message ? data.message : 'Request failed.');
+      }
+
+      return data;
+    });
+}
+
+function financePostForm(url, fields) {
+  const body = new URLSearchParams();
+  Object.entries(fields).forEach(([key, value]) => body.append(key, value));
+  return financeApiRequest(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: body.toString()
+  });
+}
+
+function financeSortPaymentsAscending(payments) {
+  return [...payments].sort((a, b) => {
+    if (a.payment_date === b.payment_date) {
+      return Number(a.payment_id) - Number(b.payment_id);
+    }
+    return String(a.payment_date).localeCompare(String(b.payment_date));
+  });
+}
+
+function financeNormalizeStudent(student) {
+  return {
+    ...student,
+    student_id: Number(student.student_id),
+    year_of_study: Number(student.year_of_study)
+  };
+}
+
+function financeNormalizePayment(payment) {
+  return {
+    ...payment,
+    payment_id: Number(payment.payment_id),
+    student_id: Number(payment.student_id),
+    year_of_study: Number(payment.year_of_study),
+    amount: Number(payment.amount)
+  };
+}
+
+function financeRefreshSelections() {
+  if (document.getElementById('rp-student').value) {
+    loadStudentInfo();
+  }
+
+  if (document.getElementById('v-receipt').value.trim()) {
+    lookupReceipt();
+  }
+
+  if (document.getElementById('rec-select').value) {
+    previewReceipt();
+  }
+}
+
+function financeLoadLiveData() {
+  return Promise.all([
+    financeApiRequest('get_finance_dashboard.php'),
+    financeApiRequest('get_payments.php'),
+    financeApiRequest('get_unpaid_students.php')
+  ]).then(([dashboardData, paymentsData, unpaidData]) => {
+    DB.students = (dashboardData.students || []).map(financeNormalizeStudent);
+    DB.payments = financeSortPaymentsAscending((paymentsData.payments || []).map(financeNormalizePayment));
+    window.financeDashboardMetrics = dashboardData.metrics || {};
+    window.financeUnpaidStudents = (unpaidData.students || []).map(financeNormalizeStudent);
+  });
+}
+
+function financeApplyUserSession() {
+  const storedUser = sessionStorage.getItem('user');
+  if (!storedUser) {
+    window.location.href = 'login.html';
+    return false;
+  }
+
+  try {
+    currentUser = JSON.parse(storedUser);
+  } catch (error) {
+    window.location.href = 'login.html';
+    return false;
+  }
+
+  if (String(currentUser.role || '').toLowerCase() !== 'finance') {
+    window.location.href = 'login.html';
+    return false;
+  }
+
+  const initials = (currentUser.name || 'Finance Officer')
+    .split(' ')
+    .map(word => word[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+
+  document.getElementById('sb-avatar').textContent = initials;
+  document.getElementById('sb-name').textContent = currentUser.name || 'Finance Officer';
+
+  const now = new Date();
+  document.getElementById('topbar-date').textContent = now.toLocaleDateString('en-KE', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+
+  const hour = now.getHours();
+  const greeting = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+  document.getElementById('dash-greeting').textContent = `Good ${greeting}, ${(currentUser.name || 'Finance Officer').split(' ')[0]} 👋`;
+
+  const today = now.toISOString().split('T')[0];
+  ['rp-date', 'm-date'].forEach(id => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.value = today;
+    }
+  });
+
+  return true;
+}
+
+function financeAfterMutation(message, type) {
+  return financeLoadLiveData().then(() => {
+    renderAll();
+    financeRefreshSelections();
+    toast(message, type || 'success');
+  });
+}
+
+function renderDashboard() {
+  const metrics = window.financeDashboardMetrics || {};
+  const totalPaid = Number(metrics.total_paid_amount || DB.payments.filter(payment => payment.status === 'Paid').reduce((sum, payment) => sum + Number(payment.amount), 0));
+  const totalStudents = Number(metrics.total_students || DB.students.length);
+  const unpaidStudents = Number(metrics.unpaid_students || 0);
+  const totalRecords = Number(metrics.total_payment_records || DB.payments.length);
+  const paidRecords = Number(metrics.paid_records || DB.payments.filter(payment => payment.status === 'Paid').length);
+  const outstandingAmount = Number(metrics.outstanding_amount || (unpaidStudents * 15000));
+  const currentMonthRecords = Number(metrics.current_month_records || 0);
+  const collectionRate = totalStudents ? Math.round(((totalStudents - unpaidStudents) / totalStudents) * 100) : 0;
+  const unpaidRecords = Math.max(totalRecords - paidRecords, 0);
+  const paidPct = totalRecords ? Math.round((paidRecords / totalRecords) * 100) : 0;
+  const unpaidPct = totalRecords ? 100 - paidPct : 0;
+
+  document.getElementById('kpi-collected').textContent = 'KES ' + totalPaid.toLocaleString();
+  document.getElementById('kpi-outstanding').textContent = 'KES ' + outstandingAmount.toLocaleString();
+  document.getElementById('kpi-students').textContent = totalStudents;
+  document.getElementById('kpi-rate').textContent = collectionRate + '%';
+  document.getElementById('kpi-outstanding-sub').textContent = unpaidStudents + ' student(s) unpaid';
+
+  document.getElementById('st-total-pay').textContent = totalRecords;
+  document.getElementById('st-paid').textContent = paidRecords;
+  document.getElementById('st-unpaid').textContent = unpaidStudents;
+  document.getElementById('st-month').textContent = currentMonthRecords;
+  document.getElementById('st-month-sub').textContent = new Date().toLocaleDateString('en-KE', {
+    month: 'long',
+    year: 'numeric'
+  });
+
+  document.getElementById('collection-breakdown').innerHTML = `
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:13px;font-weight:500">Paid</span>
+        <span style="font-size:12px;color:var(--ink-muted)">${paidRecords} payments · KES ${totalPaid.toLocaleString()}</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${paidPct}%;background:var(--success-mid)"></div></div>
+      <div class="prog-label"><span>${paidPct}%</span></div>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:13px;font-weight:500">Unpaid</span>
+        <span style="font-size:12px;color:var(--ink-muted)">${unpaidRecords} payments</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${unpaidPct}%;background:var(--danger-mid)"></div></div>
+      <div class="prog-label"><span>${unpaidPct}%</span></div>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;font-size:12.5px">
+      <span style="color:var(--ink-muted)">Total collected</span>
+      <strong style="color:var(--success-mid)">KES ${totalPaid.toLocaleString()}</strong>
+    </div>`;
+
+  const monthlyTotals = {};
+  DB.payments.filter(payment => payment.status === 'Paid').forEach(payment => {
+    const monthKey = payment.payment_date.slice(0, 7);
+    monthlyTotals[monthKey] = (monthlyTotals[monthKey] || 0) + Number(payment.amount);
+  });
+
+  const monthKeys = Object.keys(monthlyTotals).sort().slice(-6);
+  const maxValue = Math.max(...monthKeys.map(key => monthlyTotals[key]), 1);
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  document.getElementById('monthly-chart').innerHTML = monthKeys.length
+    ? monthKeys.map(monthKey => {
+        const height = Math.round((monthlyTotals[monthKey] / maxValue) * 100);
+        const label = monthNames[Number(monthKey.slice(5, 7)) - 1] + ' ' + monthKey.slice(2, 4);
+        return `<div class="chart-bar-col">
+          <div class="chart-val">KES ${(monthlyTotals[monthKey] / 1000).toFixed(0)}k</div>
+          <div class="chart-bar" style="height:${height}%"></div>
+          <div class="chart-label">${label}</div>
+        </div>`;
+      }).join('')
+    : '<div class="empty" style="width:100%"><div class="ei">📊</div><p>No paid records yet.</p></div>';
+
+  const recent = [...DB.payments].reverse().slice(0, 5);
+  document.getElementById('dash-pay-tbody').innerHTML = recent.length ? recent.map(payment => `
+    <tr>
+      <td><span class="badge b-blue">PAY-${String(payment.payment_id).padStart(3, '0')}</span></td>
+      <td><strong>${payment.student_name || '—'}</strong></td>
+      <td><strong>KES ${Number(payment.amount).toLocaleString()}</strong></td>
+      <td class="mono">${payment.receipt_number}</td>
+      <td>${fmtDate(payment.payment_date)}</td>
+      <td>${statusBadge(payment.status)}</td>
+    </tr>`).join('') : '<tr><td colspan="6"><div class="empty"><p>No payment records yet.</p></div></td></tr>';
+}
+
+function renderPayments() {
+  const search = (document.getElementById('pay-search')?.value || '').toLowerCase();
+  const status = document.getElementById('pay-filter-status')?.value || '';
+  const month = document.getElementById('pay-filter-month')?.value || '';
+
+  const list = DB.payments.filter(payment => {
+    const matchSearch = !search ||
+      String(payment.student_name || '').toLowerCase().includes(search) ||
+      String(payment.receipt_number || '').toLowerCase().includes(search);
+    const matchStatus = !status || payment.status === status;
+    const matchMonth = !month || payment.payment_date.slice(5, 7) === month;
+    return matchSearch && matchStatus && matchMonth;
+  });
+
+  document.getElementById('pay-count-badge').textContent = list.length + ' record' + (list.length !== 1 ? 's' : '');
+  document.getElementById('all-pay-tbody').innerHTML = list.length ? [...list].reverse().map(payment => `
+    <tr>
+      <td><span class="badge b-blue">${payment.payment_id}</span></td>
+      <td>
+        <div style="font-weight:500">${payment.student_name || 'Unknown'}</div>
+        <div style="font-size:11px;color:var(--ink-muted)">${payment.course || ''} · Yr ${payment.year_of_study || ''}</div>
+      </td>
+      <td><strong>KES ${Number(payment.amount).toLocaleString()}</strong></td>
+      <td class="mono">${payment.receipt_number}</td>
+      <td>${fmtDate(payment.payment_date)}</td>
+      <td>${statusBadge(payment.status)}</td>
+      <td>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick="viewPayment(${payment.payment_id})">View</button>
+          ${payment.status === 'Unpaid' ? `<button class="btn btn-success btn-sm" onclick="markPaid(${payment.payment_id})">✓ Mark Paid</button>` : ''}
+          <button class="btn btn-danger btn-sm" onclick="deletePayment(${payment.payment_id})">🗑</button>
+        </div>
+      </td>
+    </tr>`).join('') : '<tr><td colspan="7"><div class="empty"><div class="ei">💳</div><p>No payment records found.</p></div></td></tr>';
+}
+
+function renderPending() {
+  const search = (document.getElementById('pend-search')?.value || '').toLowerCase();
+  const unpaidStudents = window.financeUnpaidStudents || [];
+  const filtered = unpaidStudents.filter(student => !search || student.name.toLowerCase().includes(search));
+  const paidStudentCount = DB.students.length - unpaidStudents.length;
+
+  document.getElementById('pend-unpaid').textContent = unpaidStudents.length;
+  document.getElementById('pend-amount').textContent = 'KES ' + (unpaidStudents.length * 15000).toLocaleString();
+  document.getElementById('pend-paid').textContent = paidStudentCount;
+
+  document.getElementById('pend-tbody').innerHTML = filtered.length ? filtered.map(student => {
+    const badgeClass = student.payment_status === 'Unpaid' ? 'b-amber' : 'b-red';
+    return `<tr>
+      <td><span class="badge b-gray">${student.student_id}</span></td>
+      <td>
+        <div style="font-weight:500">${student.name}</div>
+        <div style="font-size:11px;color:var(--ink-muted)">${student.email || ''}</div>
+      </td>
+      <td>${student.course || ''}</td>
+      <td>Year ${student.year_of_study || ''}</td>
+      <td>${student.phone_no || '—'}</td>
+      <td><span class="badge ${badgeClass}">${student.payment_status}</span></td>
+      <td><button class="btn btn-primary btn-sm" onclick="quickRecord(${student.student_id})">+ Record Payment</button></td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="7"><div class="empty"><div class="ei">🎉</div><p>All students have payment records!</p></div></td></tr>';
+}
+
+function populateStudentDropdowns() {
+  const options = '<option value="">Select student...</option>' + DB.students.map(student =>
+    `<option value="${student.student_id}">${student.name} (ID: ${student.student_id})</option>`
+  ).join('');
+
+  ['rp-student', 'm-student'].forEach(id => {
+    const element = document.getElementById(id);
+    if (element) {
+      const selectedValue = element.value;
+      element.innerHTML = options;
+      if (selectedValue && element.querySelector(`option[value="${selectedValue}"]`)) {
+        element.value = selectedValue;
+      }
+    }
+  });
+}
+
+function populateReceiptDropdown() {
+  const select = document.getElementById('rec-select');
+  if (!select) {
+    return;
+  }
+
+  const paidPayments = DB.payments.filter(payment => payment.status === 'Paid');
+  select.innerHTML = '<option value="">Choose a payment...</option>' + paidPayments.map(payment =>
+    `<option value="${payment.payment_id}">${payment.receipt_number} — ${payment.student_name || '?'}</option>`
+  ).join('');
+}
+
+function renderReceipts() {
+  const paidPayments = DB.payments.filter(payment => payment.status === 'Paid');
+  document.getElementById('receipts-tbody').innerHTML = paidPayments.length ? paidPayments.map(payment => `
+    <tr>
+      <td class="mono" style="font-size:12px">${payment.receipt_number}</td>
+      <td>${payment.student_name || '—'}</td>
+      <td>KES ${Number(payment.amount).toLocaleString()}</td>
+      <td>${fmtDate(payment.payment_date)}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="document.getElementById('rec-select').value=${payment.payment_id};previewReceipt()">Preview</button></td>
+    </tr>`).join('') : '<tr><td colspan="5"><div class="empty"><p>No paid receipts yet.</p></div></td></tr>';
+}
+
+function previewReceipt() {
+  const paymentId = Number(document.getElementById('rec-select').value);
+  const preview = document.getElementById('receipt-preview');
+  const printButton = document.getElementById('receipt-print-btn');
+  if (!paymentId) {
+    preview.innerHTML = '<div class="empty"><div class="ei">🧾</div><p>Select a payment above.</p></div>';
+    printButton.style.display = 'none';
+    return;
+  }
+
+  const payment = DB.payments.find(entry => entry.payment_id === paymentId && entry.status === 'Paid');
+  if (!payment) {
+    preview.innerHTML = '<div class="empty"><p>Not found.</p></div>';
+    printButton.style.display = 'none';
+    return;
+  }
+
+  preview.innerHTML = `
+    <div class="receipt">
+      <div class="receipt-header">
+        <h3>HavenMS</h3>
+        <p>Hostel Management System<br>Official Payment Receipt</p>
+      </div>
+      <div class="receipt-row"><span class="rk">Receipt No.</span><span class="rv">${payment.receipt_number}</span></div>
+      <div class="receipt-row"><span class="rk">Payment ID</span><span class="rv">PAY-${String(payment.payment_id).padStart(3, '0')}</span></div>
+      <div class="receipt-row"><span class="rk">Student Name</span><span class="rv">${payment.student_name}</span></div>
+      <div class="receipt-row"><span class="rk">Student ID</span><span class="rv">${payment.student_id}</span></div>
+      <div class="receipt-row"><span class="rk">Course</span><span class="rv">${payment.course} · Year ${payment.year_of_study || '—'}</span></div>
+      <div class="receipt-row"><span class="rk">Payment Date</span><span class="rv">${fmtDate(payment.payment_date)}</span></div>
+      <div class="receipt-row"><span class="rk">Description</span><span class="rv">Hostel Accommodation Fee</span></div>
+      <div class="receipt-total"><span>TOTAL PAID</span><span>KES ${Number(payment.amount).toLocaleString()}</span></div>
+      <div class="receipt-stamp">Payment Verified</div>
+    </div>`;
+  printButton.style.display = 'block';
+}
+
+function loadStudentInfo() {
+  const studentId = Number(document.getElementById('rp-student').value);
+  const preview = document.getElementById('student-preview');
+  const empty = document.getElementById('student-preview-empty');
+  const student = DB.students.find(entry => entry.student_id === studentId);
+  if (!student) {
+    preview.style.display = 'none';
+    empty.style.display = '';
+    return;
+  }
+
+  const payments = DB.payments.filter(payment => payment.student_id === studentId);
+  const hasPaid = payments.some(payment => payment.status === 'Paid');
+  const initials = student.name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
+
+  document.getElementById('prev-avatar').textContent = initials;
+  document.getElementById('prev-name').textContent = student.name;
+  document.getElementById('prev-course').textContent = student.course + ' · Year ' + (student.year_of_study || '—');
+  document.getElementById('prev-id').textContent = student.student_id;
+  document.getElementById('prev-year').textContent = 'Year ' + (student.year_of_study || '—');
+  document.getElementById('prev-gender').textContent = student.gender || '—';
+  document.getElementById('prev-phone').textContent = student.phone_no || '—';
+  document.getElementById('prev-email').textContent = student.email || '—';
+  document.getElementById('prev-pay-count').textContent = payments.length + ' record(s)';
+  document.getElementById('prev-pay-status').innerHTML = hasPaid
+    ? '<span class="badge b-green">Paid</span>'
+    : payments.length
+      ? '<span class="badge b-amber">Unpaid</span>'
+      : '<span class="badge b-red">No Record</span>';
+
+  preview.style.display = '';
+  empty.style.display = 'none';
+}
+
+function clearRecordForm() {
+  ['rp-student', 'rp-receipt', 'rp-amount'].forEach(id => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.value = '';
+    }
+  });
+
+  document.getElementById('rp-status').value = 'Paid';
+  document.getElementById('student-preview').style.display = 'none';
+  document.getElementById('student-preview-empty').style.display = '';
+}
+
+function quickRecord(studentId) {
+  const element = document.getElementById('rp-student');
+  if (element) {
+    element.value = studentId;
+    loadStudentInfo();
+  }
+  nav('record');
+}
+
+function recordPayment() {
+  const studentId = Number(document.getElementById('rp-student').value);
+  const receiptNumber = document.getElementById('rp-receipt').value.trim();
+  const amount = document.getElementById('rp-amount').value.trim();
+  const paymentDate = document.getElementById('rp-date').value;
+  const status = document.getElementById('rp-status').value;
+
+  if (!studentId) {
+    toast('Please select a student.', 'error');
+    return;
+  }
+  if (!receiptNumber) {
+    toast('Receipt number is required.', 'error');
+    return;
+  }
+  if (!amount || Number(amount) <= 0) {
+    toast('Enter a valid amount.', 'error');
+    return;
+  }
+  if (!paymentDate) {
+    toast('Payment date is required.', 'error');
+    return;
+  }
+
+  financePostForm('create_payment.php', {
+    student_id: studentId,
+    amount,
+    receipt_number: receiptNumber,
+    payment_date: paymentDate,
+    status
+  })
+    .then(response => financeAfterMutation(response.message || 'Payment recorded successfully.'))
+    .then(() => {
+      clearRecordForm();
+      nav('payments');
+    })
+    .catch(error => toast(error.message, 'error'));
+}
+
+function recordPaymentModal() {
+  const studentId = Number(document.getElementById('m-student').value);
+  const receiptNumber = document.getElementById('m-receipt').value.trim();
+  const amount = document.getElementById('m-amount').value.trim();
+  const paymentDate = document.getElementById('m-date').value;
+  const status = document.getElementById('m-status').value;
+
+  if (!studentId || !receiptNumber || !amount || Number(amount) <= 0 || !paymentDate) {
+    toast('Please fill all required fields.', 'error');
+    return;
+  }
+
+  financePostForm('create_payment.php', {
+    student_id: studentId,
+    amount,
+    receipt_number: receiptNumber,
+    payment_date: paymentDate,
+    status
+  })
+    .then(response => financeAfterMutation(response.message || 'Payment recorded successfully.'))
+    .then(() => {
+      closeModal('modal-record');
+      document.getElementById('m-student').value = '';
+      document.getElementById('m-receipt').value = '';
+      document.getElementById('m-amount').value = '';
+      document.getElementById('m-status').value = 'Paid';
+    })
+    .catch(error => toast(error.message, 'error'));
+}
+
+function markPaid(paymentId) {
+  financePostForm('update_payment_status.php', {
+    payment_id: paymentId
+  })
+    .then(response => financeAfterMutation(response.message || 'Payment status updated successfully.'))
+    .catch(error => toast(error.message, 'error'));
+}
+
+function deletePayment(paymentId) {
+  if (!confirm('Delete this payment record?')) {
+    return;
+  }
+
+  financePostForm('delete_payment.php', {
+    payment_id: paymentId
+  })
+    .then(response => financeAfterMutation(response.message || 'Payment deleted successfully.', 'warn'))
+    .then(() => closeModal('modal-view-pay'))
+    .catch(error => toast(error.message, 'error'));
+}
+
+function viewPayment(paymentId) {
+  const payment = DB.payments.find(entry => entry.payment_id === paymentId);
+  if (!payment) {
+    toast('Payment not found.', 'error');
+    return;
+  }
+
+  document.getElementById('vp-title').textContent = 'Payment · ' + payment.receipt_number;
+  document.getElementById('vp-body').innerHTML = `
+    <table class="sum-table">
+      <tr><td>Payment ID</td><td>PAY-${String(payment.payment_id).padStart(3, '0')}</td></tr>
+      <tr><td>Receipt Number</td><td class="mono">${payment.receipt_number}</td></tr>
+      <tr><td>Student</td><td><strong>${payment.student_name || '—'}</strong> (ID: ${payment.student_id})</td></tr>
+      <tr><td>Course</td><td>${payment.course || '—'} · Year ${payment.year_of_study || '—'}</td></tr>
+      <tr><td>Amount</td><td><strong style="font-size:16px">KES ${Number(payment.amount).toLocaleString()}</strong></td></tr>
+      <tr><td>Payment Date</td><td>${fmtDate(payment.payment_date)}</td></tr>
+      <tr><td>Status</td><td>${statusBadge(payment.status)}</td></tr>
+    </table>`;
+
+  const verifyButton = document.getElementById('vp-verify-btn');
+  verifyButton.style.display = payment.status === 'Unpaid' ? 'inline-flex' : 'none';
+  verifyButton.onclick = () => {
+    financePostForm('update_payment_status.php', { payment_id: paymentId })
+      .then(response => financeAfterMutation(response.message || 'Payment status updated successfully.'))
+      .then(() => closeModal('modal-view-pay'))
+      .catch(error => toast(error.message, 'error'));
+  };
+  openModal('modal-view-pay');
+}
+
+function doLogout() {
+  if (confirm('Sign out of HavenMS?')) {
+    sessionStorage.removeItem('user');
+    window.location.href = 'login.html';
+  }
+}
+
+function bootstrapFinancePortal() {
+  if (!financeApplyUserSession()) {
+    return;
+  }
+
+  financeLoadLiveData()
+    .then(() => {
+      renderAll();
+      financeRefreshSelections();
+    })
+    .catch(error => toast(error.message || 'Failed to load finance data.', 'error'));
+}
+
+bootstrapFinancePortal();
+</script>
+</body>
+</html>

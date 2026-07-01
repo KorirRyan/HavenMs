@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HavenMS — Student Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link rel = "Stylesheet" href = "StudentPortal.css">
+</head>
+<body>
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-icon">🏠</div>
+    <div>
+      <div class="brand-name">Haven<span>MS</span></div>
+      <div class="brand-sub">Student Portal</div>
+    </div>
+  </div>
+
+  <!-- Student identity card -->
+  <div class="student-id-card">
+    <div class="sid-avatar" id="sb-avatar">AM</div>
+    <div class="sid-name" id="sb-name">Alice Mwangi</div>
+    <div class="sid-id" id="sb-id">STU-001</div>
+    <div class="sid-course" id="sb-course">Computer Science · Year 2</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">My Space</div>
+    <div class="nav-item active" onclick="nav('home')" id="ni-home">
+      <span class="ni">⊞</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="nav('room')" id="ni-room">
+      <span class="ni">🛏</span> My Room
+    </div>
+    <div class="nav-item" onclick="nav('payments')" id="ni-payments">
+      <span class="ni">💳</span> Payments
+      <span class="nav-badge" id="pay-badge" style="display:none">!</span>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Services</div>
+    <div class="nav-item" onclick="nav('checkin')" id="ni-checkin">
+      <span class="ni">🔑</span> Check-in / Out
+    </div>
+    <div class="nav-item" onclick="nav('maintenance')" id="ni-maintenance">
+      <span class="ni">🔧</span> Maintenance
+    </div>
+    <div class="nav-item" onclick="nav('notices')" id="ni-notices">
+      <span class="ni">📢</span> Notices
+      <span class="nav-badge" id="notice-badge">3</span>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Account</div>
+    <div class="nav-item" onclick="nav('profile')" id="ni-profile">
+      <span class="ni">👤</span> My Profile
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <button class="logout-btn" onclick="doLogout()">
+      <span>⏻</span> Sign Out
+    </button>
+  </div>
+</aside>
+
+<!-- ═══════ MAIN ═══════ -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <div class="notif-btn" onclick="nav('notices')">
+        🔔<div class="notif-dot" id="notif-dot"></div>
+      </div>
+      <span style="font-size:12px;color:var(--ink-muted)" id="topbar-date"></span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══════ HOME / DASHBOARD ══════ -->
+    <div class="page active" id="page-home">
+      <div class="ph">
+        <div class="ph-eyebrow">Welcome back</div>
+        <h2 id="dash-greeting">Good morning, Alice 👋</h2>
+        <p id="dash-sub">Here's your hostel status at a glance.</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat blue">
+          <div class="stat-label">Room</div>
+          <div class="stat-value" id="st-room">101</div>
+          <div class="stat-sub" id="st-hostel">Sunrise House</div>
+        </div>
+        <div class="stat green">
+          <div class="stat-label">Payment Status</div>
+          <div class="stat-value" id="st-pay-status" style="font-size:18px;margin-top:4px">Paid</div>
+          <div class="stat-sub" id="st-pay-sub">Up to date</div>
+        </div>
+        <div class="stat yellow">
+          <div class="stat-label">Check-in Status</div>
+          <div class="stat-value" id="st-checkin-status" style="font-size:18px;margin-top:4px">Active</div>
+          <div class="stat-sub" id="st-checkin-sub">Checked in</div>
+        </div>
+        <div class="stat purple">
+          <div class="stat-label">Semester</div>
+          <div class="stat-value" id="st-semester" style="font-size:20px;margin-top:4px">Sem 1</div>
+          <div class="stat-sub">2024 / 2025</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Room quick view -->
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">My Room</span>
+            <button class="btn btn-ghost btn-sm" onclick="nav('room')">View details →</button>
+          </div>
+          <div class="panel-body">
+            <div style="display:flex;gap:16px;align-items:center;margin-bottom:14px">
+              <div style="font-family:'Fraunces',serif;font-size:48px;color:var(--accent);line-height:1;opacity:.85" id="dash-room-num">101</div>
+              <div>
+                <div style="font-size:14px;font-weight:600" id="dash-room-hostel">Sunrise House</div>
+                <div style="font-size:12px;color:var(--ink-muted);margin-top:3px">Floor 1 · Double occupancy</div>
+                <div style="margin-top:8px;display:flex;gap:6px">
+                  <span class="tag tag-green">● Occupied</span>
+                  <span class="tag tag-blue">Clean</span>
+                </div>
+              </div>
+            </div>
+            <div style="border-top:1px solid var(--border);padding-top:12px;font-size:12.5px;color:var(--ink-muted)">
+              Roommate: <span style="color:var(--ink);font-weight:500" id="dash-roommate">Carol Njeri</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment quick view -->
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Payment Summary</span>
+            <button class="btn btn-ghost btn-sm" onclick="nav('payments')">View all →</button>
+          </div>
+          <div class="panel-body">
+            <div class="prog-ring">
+              <div class="prog-circle">
+                <svg width="100" height="100" viewBox="0 0 100 100">
+                  <circle class="track" cx="50" cy="50" r="42"/>
+                  <circle class="fill" id="pay-ring-fill" cx="50" cy="50" r="42"
+                    stroke="#3fb950" stroke-dasharray="263.9"
+                    stroke-dashoffset="0"/>
+                </svg>
+                <div class="prog-label">
+                  <div class="prog-pct" id="pay-pct">100%</div>
+                  <div class="prog-sub">Paid</div>
+                </div>
+              </div>
+            </div>
+            <div style="text-align:center;font-size:12.5px;color:var(--ink-muted);margin-top:6px">
+              KES <span style="color:var(--ink);font-weight:600;font-size:15px" id="pay-amount">15,000</span> of <span id="pay-total">15,000</span> paid
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notices preview -->
+      <div class="panel">
+        <div class="panel-head">
+          <span class="panel-title">📢 Recent Notices</span>
+          <button class="btn btn-ghost btn-sm" onclick="nav('notices')">All notices →</button>
+        </div>
+        <div class="panel-body" id="dash-notices">
+          <!-- filled by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ MY ROOM ══════ -->
+    <div class="page" id="page-room">
+      <div class="ph">
+        <div class="ph-eyebrow">My Accommodation</div>
+        <h2>Room Details</h2>
+        <p>Your current room allocation and hostel information.</p>
+      </div>
+
+      <div class="room-hero">
+        <div class="room-num-big" id="room-num-big">101</div>
+        <div class="room-details">
+          <h3 id="room-hostel-name">Sunrise House</h3>
+          <p id="room-type-desc">Floor 1 · Double Occupancy Room<br>
+          Allocated on <span id="room-alloc-date">15 January 2025</span></p>
+          <div class="room-tags">
+            <span class="tag tag-green">● Occupied</span>
+            <span class="tag tag-blue">Clean</span>
+            <span class="tag tag-purple">Female</span>
+            <span class="tag tag-gray">Cap: 2</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">Room Information</span></div>
+          <div class="panel-body">
+            <div class="info-grid">
+              <div class="info-row"><span class="info-key">Room Number</span><span class="info-val" id="ri-room">101</span></div>
+              <div class="info-row"><span class="info-key">Hostel</span><span class="info-val" id="ri-hostel">Sunrise House</span></div>
+              <div class="info-row"><span class="info-key">Floor</span><span class="info-val" id="ri-floor">—</span></div>
+              <div class="info-row"><span class="info-key">Type</span><span class="info-val" id="ri-type">—</span></div>
+              <div class="info-row"><span class="info-key">Capacity</span><span class="info-val" id="ri-capacity">—</span></div>
+              <div class="info-row"><span class="info-key">Status</span><span class="info-val"><span class="badge b-green">● Occupied</span></span></div>
+              <div class="info-row"><span class="info-key">Cleaning</span><span class="info-val"><span class="badge b-blue">Clean</span></span></div>
+              <div class="info-row"><span class="info-key">Allocated</span><span class="info-val" id="ri-date">15 Jan 2025</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">Roommates</span></div>
+          <div class="panel-body" id="roommates-list">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><span class="panel-title">Hostel Rules & Regulations</span></div>
+        <div class="panel-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="notice-item info"><div class="notice-title">Quiet Hours</div><div class="notice-body">10:00 PM – 6:00 AM daily. Noise levels must remain minimal during these hours.</div></div>
+            <div class="notice-item warn"><div class="notice-title">Visitor Policy</div><div class="notice-body">Visitors must sign in at the hostel desk. No overnight visitors are permitted.</div></div>
+            <div class="notice-item success"><div class="notice-title">Cleaning Schedule</div><div class="notice-body">Personal rooms are cleaned every Monday and Thursday. Common areas daily.</div></div>
+            <div class="notice-item info"><div class="notice-title">Gate Curfew</div><div class="notice-body">Hostel gates close at 11:00 PM. Late entry must be pre-approved by the warden.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ PAYMENTS ══════ -->
+    <div class="page" id="page-payments">
+      <div class="ph">
+        <div class="ph-eyebrow">Finance</div>
+        <h2>My Payments</h2>
+        <p>Your hostel fee payment history and current balance.</p>
+      </div>
+
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat green">
+          <div class="stat-label">Total Paid</div>
+          <div class="stat-value" id="p-total-paid">KES 15,000</div>
+          <div class="stat-sub">Fully settled</div>
+        </div>
+        <div class="stat yellow">
+          <div class="stat-label">Balance Due</div>
+          <div class="stat-value" id="p-balance">KES 0</div>
+          <div class="stat-sub">No outstanding balance</div>
+        </div>
+        <div class="stat blue">
+          <div class="stat-label">Last Payment</div>
+          <div class="stat-value" style="font-size:18px;margin-top:4px" id="p-last-date">10 Jan 2025</div>
+          <div class="stat-sub" id="p-last-receipt">RCP-001</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span class="panel-title">Payment History</span>
+          <span class="badge b-blue" id="pay-count-badge">1 record</span>
+        </div>
+        <div style="padding:0">
+          <table class="pay-table" id="pay-hist-table">
+            <thead>
+              <tr>
+                <th>Payment ID</th><th>Amount (KES)</th><th>Receipt No.</th><th>Date</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="pay-hist-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><span class="panel-title">💡 Payment Information</span></div>
+        <div class="panel-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="notice-item info">
+              <div class="notice-title">How to Pay</div>
+              <div class="notice-body">Pay at the Finance Office (Block A, Ground Floor) or via M-Pesa Paybill <strong>123456</strong>, Account: your Student ID.</div>
+            </div>
+            <div class="notice-item warn">
+              <div class="notice-title">Deadline</div>
+              <div class="notice-body">Full payment must be received within 2 weeks of semester start. Late payments attract a 5% surcharge.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ CHECK-IN / OUT ══════ -->
+    <div class="page" id="page-checkin">
+      <div class="ph">
+        <div class="ph-eyebrow">Access</div>
+        <h2>Check-in / Check-out</h2>
+        <p>Your hostel entry and departure history.</p>
+      </div>
+
+      <div class="stats-row" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="stat green">
+          <div class="stat-label">Status</div>
+          <div class="stat-value" id="ci-status" style="font-size:20px;margin-top:4px">Checked In</div>
+          <div class="stat-sub" id="ci-since">Since 15 Jan 2025</div>
+        </div>
+        <div class="stat blue">
+          <div class="stat-label">Total Check-ins</div>
+          <div class="stat-value" id="ci-total">2</div>
+          <div class="stat-sub">This semester</div>
+        </div>
+        <div class="stat yellow">
+          <div class="stat-label">Days in Hostel</div>
+          <div class="stat-value" id="ci-days">61</div>
+          <div class="stat-sub">Since allocation</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><span class="panel-title">Entry / Exit Log</span></div>
+        <div class="panel-body">
+          <div class="timeline" id="ci-log">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ MAINTENANCE ══════ -->
+    <div class="page" id="page-maintenance">
+      <div class="ph">
+        <div class="ph-eyebrow">Support</div>
+        <h2>Maintenance Requests</h2>
+        <p>Report room issues and track their resolution status.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">Submit a Request</span></div>
+          <div class="panel-body">
+            <div class="maint-form">
+              <div class="fg">
+                <label>Issue Category *</label>
+                <select id="m-cat">
+                  <option value="">Select category...</option>
+                  <option>Plumbing</option>
+                  <option>Electrical</option>
+                  <option>Furniture / Fittings</option>
+                  <option>Door / Lock</option>
+                  <option>Windows</option>
+                  <option>Pest Control</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label>Priority</label>
+                <select id="m-priority">
+                  <option>Normal</option>
+                  <option>Urgent</option>
+                  <option>Emergency</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label>Description *</label>
+                <textarea id="m-desc" placeholder="Describe the issue in detail..."></textarea>
+              </div>
+              <button class="btn btn-primary btn-full" onclick="submitMaintenance()">Submit Request →</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">My Requests</span>
+            <span class="badge b-blue" id="mreq-count">0 requests</span>
+          </div>
+          <div class="panel-body" id="mreq-list">
+            <div class="empty"><div class="ei">🔧</div><p>No requests submitted yet.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ NOTICES ══════ -->
+    <div class="page" id="page-notices">
+      <div class="ph">
+        <div class="ph-eyebrow">Information</div>
+        <h2>Hostel Notices</h2>
+        <p>Official announcements from the hostel administration.</p>
+      </div>
+
+      <div id="notices-list">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <!-- ══════ PROFILE ══════ -->
+    <div class="page" id="page-profile">
+      <div class="ph">
+        <div class="ph-eyebrow">Account</div>
+        <h2>My Profile</h2>
+        <p>Your personal and academic information on file.</p>
+      </div>
+
+      <div class="profile-hero">
+        <div class="profile-avatar-big" id="prof-avatar">AM</div>
+        <div class="profile-info">
+          <h3 id="prof-name">Alice Mwangi</h3>
+          <p id="prof-email">student@havens.ac.ke</p>
+          <div class="profile-tags">
+            <span class="tag tag-blue" id="prof-course-tag">Computer Science</span>
+            <span class="tag tag-green" id="prof-year-tag">Year 2</span>
+            <span class="tag tag-purple">🎓 Student</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">Personal Details</span></div>
+          <div class="panel-body">
+            <div class="info-grid">
+              <div class="info-row"><span class="info-key">Full Name</span><span class="info-val" id="p-name">Alice Mwangi</span></div>
+              <div class="info-row"><span class="info-key">Student ID</span><span class="info-val" id="p-sid">STU-001</span></div>
+              <div class="info-row"><span class="info-key">Email</span><span class="info-val" id="p-email">student@havens.ac.ke</span></div>
+              <div class="info-row"><span class="info-key">Gender</span><span class="info-val" id="p-gender">Female</span></div>
+              <div class="info-row"><span class="info-key">Course</span><span class="info-val" id="p-course">Computer Science</span></div>
+              <div class="info-row"><span class="info-key">Year of Study</span><span class="info-val" id="p-year">Year 2</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">Accommodation Details</span></div>
+          <div class="panel-body">
+            <div class="info-grid">
+              <div class="info-row"><span class="info-key">Room</span><span class="info-val" id="p-room">101</span></div>
+              <div class="info-row"><span class="info-key">Hostel</span><span class="info-val" id="p-hostel">Sunrise House</span></div>
+              <div class="info-row"><span class="info-key">Allocated</span><span class="info-val" id="p-allocated">15 Jan 2025</span></div>
+              <div class="info-row"><span class="info-key">Status</span><span class="info-val"><span class="badge b-green">Active</span></span></div>
+              <div class="info-row"><span class="info-key">Payment</span><span class="info-val" id="p-pay-status"><span class="badge b-green">Paid</span></span></div>
+              <div class="info-row"><span class="info-key">Check-in</span><span class="info-val"><span class="badge b-green">● Active</span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><span class="panel-title">Update Password</span></div>
+        <div class="panel-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:end">
+            <div class="fg">
+              <label>Current Password</label>
+              <input type="password" id="pw-current" placeholder="••••••••">
+            </div>
+            <div class="fg">
+              <label>New Password</label>
+              <input type="password" id="pw-new" placeholder="••••••••">
+            </div>
+            <div class="fg">
+              <label>Confirm New Password</label>
+              <input type="password" id="pw-confirm" placeholder="••••••••">
+            </div>
+          </div>
+          <div style="margin-top:14px;display:flex;justify-content:flex-end">
+            <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+    // 🔐 Protect page
+const storedUser = sessionStorage.getItem('user');
+const HOSTEL_NAMES = { 'H-001': 'Sunrise House', 'H-002': 'Oakwood Block', 'H-003': 'Unity Hall' };
+console.log('Session check:', storedUser);
+if (!storedUser) {
+    window.location.href = "login.html"; // back to login
+}
+// ═══════════════════════════════════════════
+//  DATA — mirrored from HMS
+// ═══════════════════════════════════════════
+const HMS_DATA = {
+  students: [
+    { id:'STU-001', name:'Alice Mwangi',  course:'Computer Science', year:'Year 2', gender:'Female', email:'student@havens.ac.ke' },
+    { id:'STU-003', name:'Carol Njeri',   course:'Business',         year:'Year 3', gender:'Female', email:'carol@havens.ac.ke' },
+    { id:'STU-005', name:'Emma Achieng',  course:'Law',              year:'Year 2', gender:'Female', email:'emma@havens.ac.ke' },
+  ],
+  allocations: [
+    { id:'AL-001', studentId:'STU-001', roomId:'R-001', date:'2025-01-15' },
+    { id:'AL-002', studentId:'STU-003', roomId:'R-001', date:'2025-01-15' },
+  ],
+  rooms: [
+    { id:'R-001', hostelId:'H-001', number:'101', capacity:2, status:'Occupied', cleaning:'Clean' },
+  ],
+  hostels: [
+    { id:'H-001', name:'Sunrise House', type:'Female', capacity:60 },
+    { id:'H-002', name:'Oakwood Block', type:'Male', capacity:80 },
+    { id:'H-003', name:'Unity Hall', type:'Mixed', capacity:40 },
+  ],
+  payments: [
+    { id:'PAY-001', studentId:'STU-001', amount:15000, receipt:'RCP-001', date:'2025-01-10', status:'Paid' },
+  ],
+  checkinLog: [
+    { student:'STU-001', type:'Check-in',  datetime:'2025-01-15 09:00', room:'R-001', notes:'Semester start' },
+    { student:'STU-001', type:'Check-out', datetime:'2025-01-20 14:00', room:'R-001', notes:'Weekend leave' },
+    { student:'STU-001', type:'Check-in',  datetime:'2025-01-22 18:30', room:'R-001', notes:'Returned' },
+  ],
+  maintenanceRequests: [],
+  notices: [
+    { title:'Water Supply Interruption', body:'Water supply to all hostels will be interrupted on Saturday 18 Jan from 8AM–2PM for maintenance. Please store adequate water beforehand.', date:'14 Jan 2025', type:'warn' },
+    { title:'Room Inspection Schedule', body:'The annual room inspection will take place on Monday 20 Jan. Ensure your room is tidy and all furniture is in order. Results will be posted by end of week.', date:'12 Jan 2025', type:'info' },
+    { title:'Semester 1 Fees Reminder', body:'All outstanding hostel fees for Semester 1 must be cleared by 31 January 2025. Visit the Finance Office for payment or use M-Pesa Paybill 123456.', date:'10 Jan 2025', type:'warn' },
+    { title:'New WiFi Network Available', body:'High-speed WiFi has been installed in all common areas. Network: HavenMS-Students, Password available at the reception desk.', date:'8 Jan 2025', type:'success' },
+    { title:'Welcome Back – Semester 1 2025', body:'The hostel administration welcomes all students back for Semester 1. Please collect your room keys from the reception within 48 hours of check-in.', date:'6 Jan 2025', type:'success' },
+  ]
+};
+
+// ═══════════════════════════════════════════
+//  SESSION
+// ═══════════════════════════════════════════
+let currentUser = { name:'Alice Mwangi', email:'student@havens.ac.ke', role:'student' };
+let myStudent = null;
+let myAllocation = null;
+let myRoom = null;
+let myHostel = null;
+let myPayments = [];
+let myCheckins = [];
+
+function initSession() {
+  try {
+    const stored = sessionStorage.getItem('user');
+    if (stored) currentUser = JSON.parse(stored);
+  } catch(e) {}
+
+  // Topbar date
+  const now = new Date();
+  document.getElementById('topbar-date').textContent = now.toLocaleDateString('en-KE', {weekday:'short',day:'numeric',month:'short',year:'numeric'});
+
+  // Greeting while loading
+  const hour = now.getHours();
+  const greet = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+  document.getElementById('dash-greeting').textContent = `Good ${greet}, ${currentUser.name.split(' ')[0]} 👋`;
+
+  // Fetch real student data from DB
+  fetch(`get_student_data.php?email=${encodeURIComponent(currentUser.email)}`)
+  .then(res => res.json())
+  .then(data => {
+    console.log('DB data:', data);
+    if (data.error) {
+      console.warn('Could not load student data:', data.error);
+      loadFallback();
+      return;
+    }
+
+    myStudent = {
+      id: data.student_id,
+      name: data.name,
+      course: data.course,
+      year: 'Year ' + data.year_of_study,
+      gender: data.gender,
+      email: data.email,
+      phone: data.phone_no,
+      status: data.status,
+      room_number: data.room_number,
+      hostel_id: data.hostel_id,
+      rejection_reason: data.rejection_reason,
+      approved_at: data.approved_at,
+      floor: data.floor_number || '—'
+    };
+
+    if (data.room_number) {
+      myRoom = { number: data.room_number };
+      myHostel = HMS_DATA.hostels.find(h => h.id === data.hostel_id) || { name: HOSTEL_NAMES[data.hostel_id] || data.hostel_id, type: 'Mixed' };
+    }
+
+    myPayments = HMS_DATA.payments.filter(p => p.studentId === myStudent.id);
+    myCheckins = HMS_DATA.checkinLog.filter(c => c.student === myStudent.id);
+
+    const initials = data.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+
+    document.getElementById('sb-avatar').textContent = initials;
+    document.getElementById('sb-name').textContent = data.name;
+    document.getElementById('sb-id').textContent = '#' + data.student_id;
+    document.getElementById('sb-course').textContent = data.course + ' · Year ' + data.year_of_study;
+    document.getElementById('prof-avatar').textContent = initials;
+
+    document.getElementById('dash-greeting').textContent = `Good ${greet}, ${data.name.split(' ')[0]} 👋`;
+    document.getElementById('dash-sub').textContent = data.status === 'approved' && data.room_number
+      ? `You're in Room ${data.room_number}, ${HOSTEL_NAMES[data.hostel_id] || ''}. Here's your status at a glance.`
+      : data.status === 'rejected'
+        ? `Your application was not approved. Please contact the hostel office.`
+        : `Welcome to your student portal. Your room allocation is pending review.`;
+
+    renderAll();
+  })
+  .catch((err) => { console.error('Fetch error:', err); loadFallback(); });
+}
+
+function loadFallback() {
+  myStudent = {
+    id: '—', name: currentUser.name, course: '—',
+    year: '—', gender: '—', email: currentUser.email,
+    status: 'pending', room_number: null, hostel_id: null
+  };
+  const initials = currentUser.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('sb-avatar').textContent = initials;
+  document.getElementById('sb-name').textContent = currentUser.name;
+  document.getElementById('sb-id').textContent = '—';
+  document.getElementById('sb-course').textContent = '—';
+  document.getElementById('prof-avatar').textContent = initials;
+  renderAll();
+}
+
+// ═══════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════
+const PAGE_TITLES = { home:'Dashboard', room:'My Room', payments:'Payments', checkin:'Check-in / Out', maintenance:'Maintenance', notices:'Notices', profile:'My Profile' };
+
+function nav(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const ni = document.getElementById('ni-' + page);
+  if (ni) ni.classList.add('active');
+  document.getElementById('topbar-title').textContent = PAGE_TITLES[page] || page;
+  // clear notice badge when viewed
+  if (page === 'notices') {
+    document.getElementById('notice-badge').style.display = 'none';
+    document.getElementById('notif-dot').style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════
+//  RENDER ALL
+// ═══════════════════════════════════════════
+function renderAll() {
+  renderDashboard();
+  renderRoom();
+  renderPayments();
+  renderCheckin();
+  renderNotices();
+  renderProfile();
+  renderMaintenance();
+}
+
+// ═══════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════
+function renderDashboard() {
+  // Stats
+  document.getElementById('st-room').textContent = myRoom ? myRoom.number : '—';
+  document.getElementById('st-hostel').textContent = myHostel ? myHostel.name : 'Pending allocation';
+
+  const paid = myPayments.find(p => p.status === 'Paid');
+  const partPaid = myPayments.find(p => p.status === 'Partially Paid');
+  const payStatus = paid ? 'Paid' : partPaid ? 'Partial' : 'Unpaid';
+  const payEl = document.getElementById('st-pay-status');
+  payEl.textContent = payStatus;
+  payEl.style.color = paid ? 'var(--green)' : partPaid ? 'var(--yellow)' : 'var(--red)';
+  document.getElementById('st-pay-sub').textContent = paid ? 'Up to date' : partPaid ? 'Partially paid' : 'Payment required';
+
+  const lastCI = [...myCheckins].filter(c => c.type === 'Check-in').pop();
+  const lastCO = [...myCheckins].filter(c => c.type === 'Check-out').pop();
+  const isIn = lastCI && (!lastCO || lastCI.datetime > lastCO.datetime);
+  document.getElementById('st-checkin-status').textContent = isIn ? 'Active' : 'Out';
+  document.getElementById('st-checkin-status').style.color = isIn ? 'var(--green)' : 'var(--yellow)';
+  document.getElementById('st-checkin-sub').textContent = isIn ? 'Currently checked in' : 'Not checked in';
+
+  // Quick room
+  document.getElementById('dash-room-num').textContent = myRoom?.number || '—';
+  document.getElementById('dash-room-hostel').textContent = myHostel?.name || 'No allocation';
+
+  // Roommates
+  const roommates = HMS_DATA.allocations
+    .filter(a => a.roomId === myAllocation?.roomId && a.studentId !== myStudent.id)
+    .map(a => HMS_DATA.students.find(s => s.id === a.studentId)?.name || a.studentId);
+  document.getElementById('dash-roommate').textContent = roommates.length ? roommates.join(', ') : 'None';
+
+  // Payment ring
+  const totalPaid = myPayments.reduce((s,p) => s + (p.status === 'Paid' ? p.amount : p.status === 'Partially Paid' ? p.amount : 0), 0);
+  const totalDue = 15000;
+  const pct = Math.round(totalPaid / totalDue * 100);
+  const circ = 263.9;
+  document.getElementById('pay-ring-fill').setAttribute('stroke-dashoffset', circ - (circ * pct / 100));
+  document.getElementById('pay-ring-fill').setAttribute('stroke', pct === 100 ? 'var(--green)' : pct > 50 ? 'var(--yellow)' : 'var(--red)');
+  document.getElementById('pay-pct').textContent = pct + '%';
+  document.getElementById('pay-amount').textContent = totalPaid.toLocaleString();
+  document.getElementById('pay-total').textContent = totalDue.toLocaleString();
+
+  // Notices preview (top 2)
+  const noticesEl = document.getElementById('dash-notices');
+  noticesEl.innerHTML = HMS_DATA.notices.slice(0,2).map(n =>
+    `<div class="notice-item ${n.type}">
+      <div class="notice-title">${n.title}</div>
+      <div class="notice-body">${n.body.substring(0,100)}...</div>
+      <div class="notice-date">${n.date}</div>
+    </div>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════
+//  ROOM
+// ═══════════════════════════════════════════
+// AFTER
+function renderRoom() {
+  const roomNum = myStudent?.room_number || (myRoom ? myRoom.number : null);
+  const hostelName = myHostel?.name || (myStudent?.hostel_id ? HOSTEL_NAMES[myStudent.hostel_id] : null);
+  const allocDate = myStudent?.approved_at || (myAllocation ? myAllocation.date : null);
+  const hostelType = myHostel?.type || (myStudent.hostel_id === 'H-001' ? 'Female' : myStudent.hostel_id === 'H-002' ? 'Male' : 'Mixed');
+  const floorNum = myStudent.room_number ? myStudent.room_number.replace(/[^-]*-(\d).*/, '$1') : null;
+  const floorLabel = floorNum ? (floorNum === '1' ? '1st Floor' : floorNum === '2' ? '2nd Floor' : floorNum === '3' ? '3rd Floor' : floorNum + 'th Floor') : '—';
+  
+  document.getElementById('ri-floor').textContent = floorLabel;
+  document.getElementById('ri-type').textContent = myHostel?.type || '—';
+  document.getElementById('ri-floor').textContent = '—'; // not in DB yet
+  document.getElementById('ri-capacity').textContent = myHostel?.capacity ? myHostel.capacity + ' persons' : '—';
+  document.getElementById('room-hostel-name').textContent = hostelName || 'Pending';
+  document.querySelector('.room-tags .tag-purple').textContent = hostelType;
+  document.getElementById('room-num-big').textContent = roomNum || 'Pending';
+  document.getElementById('room-hostel-name').textContent = hostelName || 'Pending';
+  document.getElementById('room-alloc-date').textContent = allocDate ? fmtDate(allocDate) : 'Pending';
+  document.getElementById('ri-room').textContent = roomNum || 'Pending';
+  document.getElementById('ri-hostel').textContent = hostelName || 'Pending';
+  document.getElementById('ri-date').textContent = allocDate ? fmtDate(allocDate) : 'Pending';
+  // Roommates
+  const roommates = HMS_DATA.allocations
+    .filter(a => a.roomId === myAllocation?.roomId && a.studentId !== myStudent.id)
+    .map(a => HMS_DATA.students.find(s => s.id === a.studentId));
+
+  const rmList = document.getElementById('roommates-list');
+  if (roommates.length === 0) {
+    rmList.innerHTML = '<div class="empty"><div class="ei">👤</div><p>No roommates assigned yet.</p></div>';
+  } else {
+    rmList.innerHTML = roommates.filter(Boolean).map(s => {
+      const initials = s.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+      return `<div class="roommate-card">
+        <div class="rm-avatar">${initials}</div>
+        <div>
+          <div class="rm-name">${s.name}</div>
+          <div class="rm-course">${s.course} · ${s.year}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+// ═══════════════════════════════════════════
+//  PAYMENTS
+// ═══════════════════════════════════════════
+function renderRoom() {
+  const roomNum = myStudent?.room_number || (myRoom ? myRoom.number : null);
+  const hostelName = myHostel?.name || (myStudent?.hostel_id ? HOSTEL_NAMES[myStudent.hostel_id] : null);
+  const allocDate = myStudent?.approved_at || (myAllocation ? myAllocation.date : null);
+  const hostelType = myHostel?.type || (myStudent.hostel_id === 'H-001' ? 'Female' : myStudent.hostel_id === 'H-002' ? 'Male' : 'Mixed');
+  const floorNum = myStudent?.room_number ? myStudent.room_number.replace(/[^-]*-(\d).*/, '$1') : null;
+  const computedFloor = floorNum && floorNum !== myStudent.room_number
+    ? (floorNum === '1' ? '1st Floor' : floorNum === '2' ? '2nd Floor' : floorNum === '3' ? '3rd Floor' : floorNum + 'th Floor')
+    : '—';
+  const floorLabel = myStudent?.floor && myStudent.floor !== '—' ? myStudent.floor : computedFloor;
+
+  document.getElementById('ri-floor').textContent = floorLabel;
+  document.getElementById('ri-type').textContent = myHostel?.type || '—';
+  document.getElementById('ri-capacity').textContent = myHostel?.capacity ? myHostel.capacity + ' persons' : '—';
+  document.getElementById('room-hostel-name').textContent = hostelName || 'Pending';
+  document.querySelector('.room-tags .tag-purple').textContent = hostelType;
+  document.getElementById('room-num-big').textContent = roomNum || 'Pending';
+  document.getElementById('room-hostel-name').textContent = hostelName || 'Pending';
+  document.getElementById('room-alloc-date').textContent = allocDate ? fmtDate(allocDate) : 'Pending';
+  document.getElementById('ri-room').textContent = roomNum || 'Pending';
+  document.getElementById('ri-hostel').textContent = hostelName || 'Pending';
+  document.getElementById('ri-date').textContent = allocDate ? fmtDate(allocDate) : 'Pending';
+
+  const roommates = HMS_DATA.allocations
+    .filter(a => a.roomId === myAllocation?.roomId && a.studentId !== myStudent.id)
+    .map(a => HMS_DATA.students.find(s => s.id === a.studentId));
+
+  const rmList = document.getElementById('roommates-list');
+  if (roommates.length === 0) {
+    rmList.innerHTML = '<div class="empty"><div class="ei">👤</div><p>No roommates assigned yet.</p></div>';
+  } else {
+    rmList.innerHTML = roommates.filter(Boolean).map(s => {
+      const initials = s.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+      return `<div class="roommate-card">
+        <div class="rm-avatar">${initials}</div>
+        <div>
+          <div class="rm-name">${s.name}</div>
+          <div class="rm-course">${s.course} · ${s.year}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function renderPayments() {
+  const totalPaid = myPayments.reduce((s,p) => s+(p.status==='Paid'?p.amount:p.status==='Partially Paid'?p.amount:0), 0);
+  const totalDue = 15000;
+  const balance = totalDue - totalPaid;
+
+  document.getElementById('p-total-paid').textContent = 'KES ' + totalPaid.toLocaleString();
+  document.getElementById('p-balance').textContent = 'KES ' + balance.toLocaleString();
+
+  const last = myPayments[myPayments.length - 1];
+  if (last) {
+    document.getElementById('p-last-date').textContent = fmtDate(last.date);
+    document.getElementById('p-last-receipt').textContent = last.receipt;
+  }
+
+  document.getElementById('pay-count-badge').textContent = myPayments.length + ' record' + (myPayments.length !== 1 ? 's' : '');
+
+  document.getElementById('pay-hist-tbody').innerHTML = myPayments.length
+    ? myPayments.map(p => {
+        const badgeCls = p.status === 'Paid' ? 'b-green' : p.status === 'Partially Paid' ? 'b-yellow' : 'b-red';
+        return `<tr>
+          <td><span class="badge b-blue">${p.id}</span></td>
+          <td><strong>${p.amount.toLocaleString()}</strong></td>
+          <td style="font-family:monospace;font-size:12px">${p.receipt}</td>
+          <td>${fmtDate(p.date)}</td>
+          <td><span class="badge ${badgeCls}">${p.status}</span></td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="5"><div class="empty"><div class="ei">💳</div><p>No payment records found.</p></div></td></tr>';
+}
+
+// ═══════════════════════════════════════════
+//  CHECK-IN
+// ═══════════════════════════════════════════
+function renderCheckin() {
+  const lastCI = [...myCheckins].filter(c => c.type === 'Check-in').pop();
+  const lastCO = [...myCheckins].filter(c => c.type === 'Check-out').pop();
+  const isIn = lastCI && (!lastCO || lastCI.datetime > lastCO.datetime);
+
+  document.getElementById('ci-status').textContent = isIn ? '✓ Checked In' : '○ Checked Out';
+  document.getElementById('ci-status').style.color = isIn ? 'var(--green)' : 'var(--yellow)';
+  document.getElementById('ci-since').textContent = lastCI ? 'Since ' + lastCI.datetime : 'Not checked in';
+  document.getElementById('ci-total').textContent = myCheckins.filter(c=>c.type==='Check-in').length;
+
+  if (myAllocation) {
+    const days = Math.floor((new Date() - new Date(myAllocation.date)) / 86400000);
+    document.getElementById('ci-days').textContent = days;
+  }
+
+  document.getElementById('ci-log').innerHTML = [...myCheckins].reverse().map(e => {
+    const isIn = e.type === 'Check-in';
+    return `<div class="tl-item">
+      <div class="tl-dot ${isIn ? 'in' : 'out'}">${isIn ? '↓' : '↑'}</div>
+      <div>
+        <div class="tl-text">${e.type}</div>
+        <div class="tl-meta">${e.datetime}${e.notes ? ' · ' + e.notes : ''}</div>
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty"><div class="ei">🔑</div><p>No check-in/out records.</p></div>';
+}
+
+// ═══════════════════════════════════════════
+//  MAINTENANCE
+// ═══════════════════════════════════════════
+function renderMaintenance() {
+  const list = document.getElementById('mreq-list');
+  document.getElementById('mreq-count').textContent = HMS_DATA.maintenanceRequests.length + ' requests';
+  if (!HMS_DATA.maintenanceRequests.length) {
+    list.innerHTML = '<div class="empty"><div class="ei">🔧</div><p>No requests submitted yet.</p></div>';
+    return;
+  }
+  list.innerHTML = HMS_DATA.maintenanceRequests.map((r,i) => {
+    const priorityBadge = r.priority === 'Emergency' ? 'b-red' : r.priority === 'Urgent' ? 'b-yellow' : 'b-blue';
+    const statusBadge = r.status === 'Resolved' ? 'b-green' : r.status === 'In Progress' ? 'b-yellow' : 'b-gray';
+    return `<div class="mreq-card">
+      <div>
+        <div class="mreq-title">${r.category}</div>
+        <div class="mreq-desc">${r.desc}</div>
+        <div class="mreq-date">${r.date} · <span class="badge ${priorityBadge}">${r.priority}</span></div>
+      </div>
+      <span class="badge ${statusBadge}">${r.status}</span>
+    </div>`;
+  }).join('');
+}
+
+function submitMaintenance() {
+  const cat = document.getElementById('m-cat').value;
+  const desc = document.getElementById('m-desc').value.trim();
+  const priority = document.getElementById('m-priority').value;
+  if (!cat || !desc) { toast('Please fill in the category and description.', 'error'); return; }
+  const now = new Date();
+  HMS_DATA.maintenanceRequests.unshift({
+    category: cat, desc, priority,
+    date: now.toLocaleDateString('en-KE',{day:'numeric',month:'short',year:'numeric'}),
+    status: 'Pending'
+  });
+  document.getElementById('m-cat').value = '';
+  document.getElementById('m-desc').value = '';
+  toast('Maintenance request submitted! We\'ll respond within 24 hours.');
+  renderMaintenance();
+}
+
+// ═══════════════════════════════════════════
+//  NOTICES
+// ═══════════════════════════════════════════
+function renderNotices() {
+  document.getElementById('notices-list').innerHTML = HMS_DATA.notices.map(n =>
+    `<div class="notice-item ${n.type}" style="margin-bottom:12px">
+      <div class="notice-title" style="font-size:14px">${n.title}</div>
+      <div class="notice-body" style="margin-top:6px">${n.body}</div>
+      <div class="notice-date">${n.date}</div>
+    </div>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════
+//  PROFILE
+// ═══════════════════════════════════════════
+function renderProfile() {
+  document.getElementById('prof-name').textContent = currentUser.name;
+  document.getElementById('prof-email').textContent = currentUser.email;
+  document.getElementById('prof-course-tag').textContent = myStudent.course;
+  document.getElementById('prof-year-tag').textContent = myStudent.year;
+
+  document.getElementById('p-name').textContent = currentUser.name;
+  document.getElementById('p-sid').textContent = myStudent.id;
+  document.getElementById('p-email').textContent = currentUser.email;
+  document.getElementById('p-gender').textContent = myStudent.gender || '—';
+  document.getElementById('p-course').textContent = myStudent.course;
+  document.getElementById('p-year').textContent = myStudent.year;
+
+  document.getElementById('p-room').textContent = myRoom?.number || 'Pending';
+  document.getElementById('p-hostel').textContent = myHostel?.name || 'Pending';
+  document.getElementById('p-allocated').textContent = myAllocation ? fmtDate(myAllocation.date) : 'Pending';
+
+  const paid = myPayments.find(p=>p.status==='Paid');
+  const partPaid = myPayments.find(p=>p.status==='Partially Paid');
+  document.getElementById('p-pay-status').innerHTML = paid
+    ? '<span class="badge b-green">Paid</span>'
+    : partPaid ? '<span class="badge b-yellow">Partially Paid</span>'
+    : '<span class="badge b-red">Unpaid</span>';
+}
+
+function changePassword() {
+  const cur = document.getElementById('pw-current').value;
+  const nw = document.getElementById('pw-new').value;
+  const conf = document.getElementById('pw-confirm').value;
+  if (!cur || !nw || !conf) { toast('Please fill in all password fields.', 'error'); return; }
+  if (nw.length < 8) { toast('New password must be at least 8 characters.', 'error'); return; }
+  if (nw !== conf) { toast('New passwords do not match.', 'error'); return; }
+  document.getElementById('pw-current').value = '';
+  document.getElementById('pw-new').value = '';
+  document.getElementById('pw-confirm').value = '';
+  toast('Password updated successfully! ✓');
+}
+
+// ═══════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-KE', { day:'numeric', month:'short', year:'numeric' });
+}
+
+function toast(msg, type = 'success') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = (type === 'success' ? '✓ ' : '⚠ ') + msg;
+  document.getElementById('toast-wrap').appendChild(el);
+  setTimeout(() => el.remove(), 3600);
+}
+
+function doLogout() {
+  if (confirm('Sign out of HavenMS?')) {
+    sessionStorage.removeItem('user');
+    window.location.href = 'login.html';
+  }
+}
+
+// ═══════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════
+initSession();
+
+</script>
+<script>
+(() => {
+  const studentPaymentState = {
+    totalDue: 15000,
+    totalPaid: 0,
+    balance: 15000,
+    canInitiatePayment: false,
+    darajaEnabled: false,
+    latestTransaction: null,
+    phoneNumber: '',
+    studentStatus: 'pending',
+    pollTimerId: null,
+    pollAttempts: 0
+  };
+
+  const originalRenderDashboard = typeof renderDashboard === 'function' ? renderDashboard : null;
+  const originalRenderPayments = typeof renderPayments === 'function' ? renderPayments : null;
+  const originalRenderProfile = typeof renderProfile === 'function' ? renderProfile : null;
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[char]));
+  }
+
+  function ensureDarajaUi() {
+    if (!document.getElementById('daraja-student-style')) {
+      const style = document.createElement('style');
+      style.id = 'daraja-student-style';
+      style.textContent = `
+        .payment-banner,
+        .mpesa-status-box {
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: 16px;
+          margin-bottom: 18px;
+          background: #fff;
+        }
+        .payment-banner {
+          display: none;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+        }
+        .payment-banner.on {
+          display: flex;
+        }
+        .payment-banner-title {
+          font-size: 14px;
+          font-weight: 700;
+          margin-bottom: 4px;
+        }
+        .payment-banner-body,
+        .mpesa-help-text {
+          font-size: 12.5px;
+          color: var(--ink-muted);
+          line-height: 1.5;
+        }
+        .mpesa-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+          margin-top: 14px;
+        }
+        .mpesa-field label {
+          display: block;
+          font-size: 12px;
+          font-weight: 600;
+          margin-bottom: 6px;
+        }
+        .mpesa-field input {
+          width: 100%;
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          padding: 10px 12px;
+          font: inherit;
+          background: #fff;
+        }
+        .mpesa-actions {
+          display: flex;
+          gap: 10px;
+          margin-top: 14px;
+          flex-wrap: wrap;
+        }
+        .mpesa-inline-status {
+          font-size: 12px;
+          margin-top: 10px;
+          color: var(--ink-muted);
+        }
+        .mpesa-status-box.pending {
+          background: #fff7ed;
+          border-color: #fed7aa;
+        }
+        .mpesa-status-box.paid {
+          background: #ecfdf3;
+          border-color: #bbf7d0;
+        }
+        .mpesa-status-box.failed {
+          background: #fef2f2;
+          border-color: #fecaca;
+        }
+        .mpesa-status-title {
+          font-size: 13px;
+          font-weight: 700;
+          margin-bottom: 6px;
+        }
+        @media (max-width: 760px) {
+          .payment-banner {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .mpesa-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    const homePage = document.getElementById('page-home');
+    if (homePage && !document.getElementById('student-payment-banner')) {
+      const ph = homePage.querySelector('.ph');
+      if (ph) {
+        const banner = document.createElement('div');
+        banner.id = 'student-payment-banner';
+        banner.className = 'payment-banner';
+        banner.innerHTML = `
+          <div>
+            <div class="payment-banner-title" id="student-payment-banner-title">Complete your hostel payment</div>
+            <div class="payment-banner-body" id="student-payment-banner-body"></div>
+          </div>
+          <button class="btn btn-primary" type="button" onclick="nav('payments')">Open Payments</button>
+        `;
+        ph.insertAdjacentElement('afterend', banner);
+      }
+    }
+
+    const paymentsPage = document.getElementById('page-payments');
+    if (paymentsPage && !document.getElementById('student-mpesa-panel')) {
+      const historyPanel = paymentsPage.querySelector('.panel');
+      if (historyPanel) {
+        const panel = document.createElement('div');
+        panel.className = 'panel';
+        panel.id = 'student-mpesa-panel';
+        panel.innerHTML = `
+          <div class="panel-head">
+            <span class="panel-title">M-Pesa Hostel Payment</span>
+            <span class="badge b-blue" id="student-mpesa-badge">Awaiting setup</span>
+          </div>
+          <div class="panel-body">
+            <div id="student-mpesa-status-box" class="mpesa-status-box">
+              <div class="mpesa-status-title" id="student-mpesa-status-title">Hostel payment status</div>
+              <div class="mpesa-help-text" id="student-mpesa-status-body">Loading payment options...</div>
+            </div>
+            <div class="mpesa-grid">
+              <div class="mpesa-field">
+                <label for="student-mpesa-amount">Amount to Pay</label>
+                <input id="student-mpesa-amount" type="text" readonly>
+              </div>
+              <div class="mpesa-field">
+                <label for="student-mpesa-phone">M-Pesa Phone Number</label>
+                <input id="student-mpesa-phone" type="text" placeholder="07XXXXXXXX">
+              </div>
+            </div>
+            <div class="mpesa-actions">
+              <button class="btn btn-primary" id="student-mpesa-pay-btn" type="button" onclick="startDarajaHostelPayment()">Pay with M-Pesa</button>
+              <button class="btn btn-ghost" type="button" onclick="refreshStudentPaymentData()">Refresh Status</button>
+            </div>
+            <div class="mpesa-inline-status" id="student-mpesa-inline-status"></div>
+          </div>
+        `;
+        historyPanel.insertAdjacentElement('beforebegin', panel);
+      }
+    }
+  }
+
+  function mapPaymentsForLegacyUi(payments) {
+    return (payments || []).map(payment => ({
+      id: 'PAY-' + String(payment.payment_id).padStart(3, '0'),
+      amount: Number(payment.amount || 0),
+      receipt: payment.receipt_number || 'Pending',
+      date: payment.payment_date,
+      status: payment.status
+    }));
+  }
+
+  function updateDashboardPaymentPrompt() {
+    const banner = document.getElementById('student-payment-banner');
+    const title = document.getElementById('student-payment-banner-title');
+    const body = document.getElementById('student-payment-banner-body');
+    const payBadge = document.getElementById('pay-badge');
+    if (!banner || !title || !body || !payBadge) {
+      return;
+    }
+
+    payBadge.style.display = studentPaymentState.balance > 0 ? 'inline-flex' : 'none';
+
+    const latest = studentPaymentState.latestTransaction;
+    if (studentPaymentState.studentStatus !== 'approved') {
+      banner.classList.remove('on');
+      return;
+    }
+
+    if (latest && latest.status === 'Pending') {
+      banner.classList.add('on');
+      title.textContent = 'M-Pesa prompt pending';
+      body.textContent = 'Check your phone and complete the M-Pesa STK push to confirm your hostel payment.';
+      return;
+    }
+
+    if (studentPaymentState.balance > 0) {
+      banner.classList.add('on');
+      title.textContent = 'Complete your hostel payment';
+      body.textContent = 'Your room booking is approved. Pay KES ' + studentPaymentState.balance.toLocaleString() + ' to complete the hostel payment.';
+      return;
+    }
+
+    banner.classList.remove('on');
+  }
+
+  function updatePaymentPanel() {
+    ensureDarajaUi();
+
+    const amountInput = document.getElementById('student-mpesa-amount');
+    const phoneInput = document.getElementById('student-mpesa-phone');
+    const badge = document.getElementById('student-mpesa-badge');
+    const box = document.getElementById('student-mpesa-status-box');
+    const title = document.getElementById('student-mpesa-status-title');
+    const body = document.getElementById('student-mpesa-status-body');
+    const payBtn = document.getElementById('student-mpesa-pay-btn');
+    const inlineStatus = document.getElementById('student-mpesa-inline-status');
+    const paymentInfoBody = document.querySelector('#page-payments .notice-item.info .notice-body');
+    if (!amountInput || !phoneInput || !badge || !box || !title || !body || !payBtn || !inlineStatus) {
+      return;
+    }
+
+    amountInput.value = 'KES ' + studentPaymentState.balance.toLocaleString();
+    if (studentPaymentState.phoneNumber && !phoneInput.value) {
+      phoneInput.value = studentPaymentState.phoneNumber;
+    }
+
+    box.className = 'mpesa-status-box';
+    inlineStatus.textContent = '';
+
+    if (!studentPaymentState.darajaEnabled) {
+      badge.textContent = 'Setup needed';
+      title.textContent = 'Daraja is not configured yet';
+      body.innerHTML = 'Fill in <strong>daraja_config.php</strong> with your Safaricom credentials and a public callback URL before students can pay through M-Pesa.';
+      if (paymentInfoBody) {
+        paymentInfoBody.innerHTML = 'Hostel payments will use an M-Pesa STK push once Daraja is configured. For now, the admin still needs to complete the Daraja credentials setup.';
+      }
+      payBtn.disabled = true;
+      payBtn.style.opacity = '0.6';
+      return;
+    }
+
+    payBtn.disabled = false;
+    payBtn.style.opacity = '1';
+    if (paymentInfoBody) {
+      paymentInfoBody.innerHTML = 'Use the M-Pesa button above to receive an STK push on your phone. The payment will be recorded automatically once Safaricom confirms it.';
+    }
+
+    if (studentPaymentState.studentStatus !== 'approved') {
+      badge.textContent = 'Awaiting approval';
+      title.textContent = 'Payment opens after booking approval';
+      body.textContent = 'Your hostel payment button will be enabled once the admin approves your room booking.';
+      payBtn.disabled = true;
+      payBtn.style.opacity = '0.6';
+      return;
+    }
+
+    if (studentPaymentState.balance <= 0) {
+      badge.textContent = 'Paid';
+      box.classList.add('paid');
+      title.textContent = 'Hostel fee settled';
+      body.textContent = 'Your hostel fee is already fully paid. Finance can now verify the confirmed payment record.';
+      payBtn.disabled = true;
+      payBtn.style.opacity = '0.6';
+      return;
+    }
+
+    const latest = studentPaymentState.latestTransaction;
+    if (latest && latest.status === 'Pending') {
+      badge.textContent = 'Pending';
+      box.classList.add('pending');
+      title.textContent = 'M-Pesa prompt sent';
+      body.textContent = 'A payment request was sent to ' + latest.phone_number + '. Complete it on your phone, then tap Refresh Status.';
+      inlineStatus.textContent = 'Requested at ' + fmtDate(latest.requested_at);
+      return;
+    }
+
+    if (latest && latest.status === 'Failed') {
+      badge.textContent = 'Retry payment';
+      box.classList.add('failed');
+      title.textContent = 'Previous payment was not completed';
+      body.textContent = latest.result_desc || 'The last payment request was cancelled or failed. You can try again below.';
+      if (inlineStatus) {
+        inlineStatus.textContent = 'Last Daraja result: ' + (latest.result_code || 'unknown') + (latest.result_desc ? ' - ' + latest.result_desc : '');
+      }
+      return;
+    }
+
+    badge.textContent = 'Ready to pay';
+    title.textContent = 'Prompt student payment via Daraja';
+    body.textContent = 'Use the button below to send an M-Pesa STK push for the hostel fee directly to the student phone.';
+  }
+
+  function stopPaymentPolling() {
+    if (studentPaymentState.pollTimerId) {
+      clearInterval(studentPaymentState.pollTimerId);
+      studentPaymentState.pollTimerId = null;
+    }
+    studentPaymentState.pollAttempts = 0;
+  }
+
+  function beginPaymentPolling() {
+    stopPaymentPolling();
+    studentPaymentState.pollAttempts = 0;
+
+    studentPaymentState.pollTimerId = setInterval(() => {
+      studentPaymentState.pollAttempts += 1;
+      refreshStudentPaymentData();
+
+      const latest = studentPaymentState.latestTransaction;
+      if ((latest && latest.status && latest.status !== 'Pending') || studentPaymentState.pollAttempts >= 12) {
+        stopPaymentPolling();
+      }
+    }, 5000);
+  }
+
+  window.refreshStudentPaymentData = function refreshStudentPaymentData(showToastOnSuccess = false) {
+    ensureDarajaUi();
+
+    if (!currentUser || !currentUser.email) {
+      return Promise.resolve();
+    }
+
+    return fetch('get_student_payments.php?email=' + encodeURIComponent(currentUser.email))
+      .then(res => res.json())
+      .then(data => {
+        if (!data || data.status !== 'success') {
+          throw new Error(data && data.message ? data.message : 'Failed to load student payment data.');
+        }
+
+        studentPaymentState.totalDue = Number(data.total_due || 0);
+        studentPaymentState.totalPaid = Number(data.total_paid || 0);
+        studentPaymentState.balance = Number(data.balance || 0);
+        studentPaymentState.canInitiatePayment = Boolean(data.can_initiate_payment);
+        studentPaymentState.darajaEnabled = Boolean(data.daraja_enabled);
+        studentPaymentState.latestTransaction = data.latest_transaction || null;
+        studentPaymentState.phoneNumber = data.phone_number || '';
+        studentPaymentState.studentStatus = data.student_status || (myStudent && myStudent.status) || 'pending';
+
+        myPayments = mapPaymentsForLegacyUi(data.payments || []);
+
+        if (myStudent && !myStudent.id) {
+          myStudent.id = data.student_id;
+        }
+
+        if (typeof originalRenderDashboard === 'function') {
+          originalRenderDashboard();
+        }
+        if (typeof originalRenderPayments === 'function') {
+          originalRenderPayments();
+        }
+        if (typeof originalRenderProfile === 'function') {
+          originalRenderProfile();
+        }
+
+        updateDashboardPaymentPrompt();
+        updatePaymentPanel();
+
+        const latest = studentPaymentState.latestTransaction;
+        if (latest && latest.status === 'Pending') {
+          beginPaymentPolling();
+        } else if (latest && latest.status !== 'Pending') {
+          stopPaymentPolling();
+        }
+
+        if (showToastOnSuccess) {
+          toast('Payment status refreshed.');
+        }
+      })
+      .catch(error => {
+        updatePaymentPanel();
+        toast(error.message || 'Failed to load payment data.', 'error');
+      });
+  };
+
+  window.startDarajaHostelPayment = function startDarajaHostelPayment() {
+    const phoneInput = document.getElementById('student-mpesa-phone');
+    if (!myStudent || !myStudent.id) {
+      toast('Student account details are still loading. Please try again.', 'error');
+      return;
+    }
+
+    const payBtn = document.getElementById('student-mpesa-pay-btn');
+    const inlineStatus = document.getElementById('student-mpesa-inline-status');
+    const payload = new URLSearchParams({
+      student_id: String(myStudent.id),
+      phone_number: phoneInput ? phoneInput.value.trim() : ''
+    });
+
+    if (payBtn) {
+      payBtn.disabled = true;
+      payBtn.textContent = 'Sending prompt...';
+    }
+    if (inlineStatus) {
+      inlineStatus.textContent = 'Sending the M-Pesa prompt to the student phone...';
+    }
+
+    fetch('daraja_stk_push.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: payload.toString()
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (!data || data.status !== 'success') {
+          throw new Error(data && data.message ? data.message : 'Failed to start M-Pesa payment.');
+        }
+
+        if (phoneInput && data.phone_number) {
+          phoneInput.value = data.phone_number;
+        }
+
+        toast((data.message || 'M-Pesa prompt sent.') + ' Check the phone for the STK prompt.');
+        if (inlineStatus) {
+          inlineStatus.textContent = 'STK push sent. Waiting for Safaricom confirmation...';
+        }
+        beginPaymentPolling();
+        refreshStudentPaymentData();
+      })
+      .catch(error => {
+        toast(error.message || 'Failed to start M-Pesa payment.', 'error');
+        updatePaymentPanel();
+      })
+      .finally(() => {
+        if (payBtn) {
+          payBtn.disabled = false;
+          payBtn.textContent = 'Pay with M-Pesa';
+        }
+        if (inlineStatus) {
+          inlineStatus.textContent = '';
+        }
+      });
+  };
+
+  renderDashboard = function renderDashboardWithDaraja() {
+    if (typeof originalRenderDashboard === 'function') {
+      originalRenderDashboard();
+    }
+
+    const totalPaid = studentPaymentState.totalPaid;
+    const totalDue = studentPaymentState.totalDue;
+    const balance = studentPaymentState.balance;
+    const latest = studentPaymentState.latestTransaction;
+
+    document.getElementById('pay-amount').textContent = totalPaid.toLocaleString();
+    document.getElementById('pay-total').textContent = totalDue.toLocaleString();
+
+    const pct = totalDue > 0 ? Math.round((totalPaid / totalDue) * 100) : 0;
+    const circ = 263.9;
+    const fill = document.getElementById('pay-ring-fill');
+    fill.setAttribute('stroke-dashoffset', circ - (circ * pct / 100));
+    fill.setAttribute('stroke', pct === 100 ? 'var(--green)' : latest && latest.status === 'Pending' ? 'var(--yellow)' : 'var(--red)');
+    document.getElementById('pay-pct').textContent = pct + '%';
+
+    const payEl = document.getElementById('st-pay-status');
+    const paySub = document.getElementById('st-pay-sub');
+    if (balance <= 0) {
+      payEl.textContent = 'Paid';
+      payEl.style.color = 'var(--green)';
+      paySub.textContent = 'Hostel fee settled';
+    } else if (latest && latest.status === 'Pending') {
+      payEl.textContent = 'Pending';
+      payEl.style.color = 'var(--yellow)';
+      paySub.textContent = 'M-Pesa prompt sent';
+    } else {
+      payEl.textContent = 'Unpaid';
+      payEl.style.color = 'var(--red)';
+      paySub.textContent = 'Payment required';
+    }
+
+    updateDashboardPaymentPrompt();
+  };
+
+  renderPayments = function renderPaymentsWithDaraja() {
+    if (typeof originalRenderPayments === 'function') {
+      originalRenderPayments();
+    }
+
+    document.getElementById('p-total-paid').textContent = 'KES ' + studentPaymentState.totalPaid.toLocaleString();
+    document.getElementById('p-balance').textContent = 'KES ' + studentPaymentState.balance.toLocaleString();
+
+    const lastPaid = [...myPayments].filter(payment => payment.status === 'Paid').pop();
+    document.getElementById('p-last-date').textContent = lastPaid ? fmtDate(lastPaid.date) : 'No payment yet';
+    document.getElementById('p-last-receipt').textContent = lastPaid ? (lastPaid.receipt || 'Pending') : 'Awaiting payment';
+
+    updatePaymentPanel();
+  };
+
+  renderProfile = function renderProfileWithDaraja() {
+    if (typeof originalRenderProfile === 'function') {
+      originalRenderProfile();
+    }
+
+    const statusEl = document.getElementById('p-pay-status');
+    if (!statusEl) {
+      return;
+    }
+
+    if (studentPaymentState.balance <= 0) {
+      statusEl.innerHTML = '<span class="badge b-green">Paid</span>';
+    } else if (studentPaymentState.latestTransaction && studentPaymentState.latestTransaction.status === 'Pending') {
+      statusEl.innerHTML = '<span class="badge b-yellow">Pending M-Pesa</span>';
+    } else {
+      statusEl.innerHTML = '<span class="badge b-red">Unpaid</span>';
+    }
+  };
+
+  const originalInitSession = typeof initSession === 'function' ? initSession : null;
+  if (typeof originalInitSession === 'function') {
+    initSession = function initSessionWithDaraja() {
+      originalInitSession();
+      setTimeout(() => {
+        refreshStudentPaymentData();
+      }, 250);
+    };
+  }
+
+  ensureDarajaUi();
+  setTimeout(() => {
+    refreshStudentPaymentData();
+  }, 500);
+})();
+</script>
+</body>
+</html>

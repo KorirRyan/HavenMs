@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HavenMS — Sign In / Register</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="login.css">
+</head>
+<body>
+<div class="auth-wrapper">
+
+  <!-- ══ LEFT PANEL ══ -->
+  <div class="left-panel">
+    <div class="geo geo-1"></div><div class="geo geo-2"></div>
+    <div class="geo geo-3"></div><div class="geo geo-4"></div>
+    <div class="left-top">
+      <div class="brand">
+        <div class="brand-icon">🏠</div>
+        <div class="brand-name">Haven<span>MS</span></div>
+      </div>
+      <div class="left-hero">
+        <h1>Your hostel.<br><em>Simplified.</em><br>Sorted.</h1>
+        <p>A complete digital system for student housing — applications, allocations, payments and more, all in one place.</p>
+      </div>
+      <div class="features">
+        <div class="feature-item"><div class="feature-dot">🎓</div><span class="feature-text">Apply for accommodation in minutes</span></div>
+        <div class="feature-item"><div class="feature-dot">📋</div><span class="feature-text">Track room allocation &amp; availability</span></div>
+        <div class="feature-item"><div class="feature-dot">💳</div><span class="feature-text">View payment status &amp; receipts</span></div>
+        <div class="feature-item"><div class="feature-dot">📊</div><span class="feature-text">Real-time occupancy &amp; reports</span></div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <p>"Registering took under three minutes. I had my room confirmed the same day — no queues, no paperwork."</p>
+      <div class="testimonial-author">
+        <div class="t-avatar">AM</div>
+        <div><div class="t-name">Alice Mwangi</div><div class="t-role">Year 2, Computer Science</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ RIGHT PANEL ══ -->
+  <div class="right-panel">
+    <div class="form-container">
+
+      <!-- ════ SIGN IN ════ -->
+      <div class="panel-sw active" id="panel-login">
+        <div class="eyebrow">Welcome back</div>
+        <h2 class="fh">Sign in to HavenMS</h2>
+        <p class="fh-sub">Select your role and enter your credentials.</p>
+
+        <div class="role-tabs">
+          <button class="role-tab active" onclick="setRole('admin',this)"><span class="ti">⚙️</span>Admin</button>
+          <button class="role-tab" onclick="setRole('finance',this)"><span class="ti">💳</span>Finance</button>
+          <button class="role-tab" onclick="setRole('student',this)"><span class="ti">🎓</span>Student</button>
+          <button class="role-tab" onclick="setRole('cleaner',this)"><span class="ti">🧹</span>Cleaner</button>
+        </div>
+
+        <div class="alert ae" id="login-alert"><span>⚠</span><span id="login-alert-msg"></span></div>
+
+        <div class="fg"><label>Email Address</label>
+          <div class="wrap"><span class="wi">✉</span><input type="email" id="l-email" placeholder=""></div>
+          <span class="ferr" id="fe-l-email">Please enter a valid email.</span>
+        </div>
+        <div class="fg"><label>Password</label>
+          <div class="wrap"><span class="wi">🔒</span><input type="password" id="l-pw" class="pw-f" placeholder="">
+          <button class="pw-btn" onclick="togglePw('l-pw',this)" type="button">👁</button></div>
+          <span class="ferr" id="fe-l-pw">Password is required.</span>
+        </div>
+
+        <div class="fm">
+          <label class="rm"><input type="checkbox" id="remember"> Remember me</label>
+          <span class="lk" onclick="go('forgot')">Forgot password?</span>
+        </div>
+
+        <button class="btn btn-p" id="btn-login" onclick="doLogin()">
+          <span class="bt">Sign In →</span><div class="sp"></div>
+        </button>
+
+        <!-- FIX 6: These are now shown/hidden by setRole() -->
+        <div class="sw" style="display:none" id="sw-student">New student? <span class="lk" onclick="go('sreg')">Create student account →</span></div>
+        <div class="sw" style="display:none; margin-top:8px" id="sw-staff">Staff / Cleaner? <span class="lk" onclick="go('staffreg')">Register here →</span></div>
+      </div>
+
+
+      <!-- ════ STUDENT REGISTRATION ════ -->
+      <div class="panel-sw" id="panel-sreg">
+
+        <!-- Progress bar -->
+        <div class="psteps">
+          <div class="psi active" id="ps1"><div class="psd"><span>1</span></div><span class="psl-label">Personal</span></div>
+          <div class="pline" id="pl1"></div>
+          <div class="psi" id="ps2"><div class="psd"><span>2</span></div><span class="psl-label">Hostel</span></div>
+          <div class="pline" id="pl2"></div>
+          <div class="psi" id="ps3"><div class="psd"><span>3</span></div><span class="psl-label">Security</span></div>
+        </div>
+
+        <!-- ─ Step 1: Personal ─ -->
+        <div id="ss1">
+          <div class="eyebrow">Step 1 of 3 · Personal Information</div>
+          <h2 class="fh">Tell us about yourself</h2>
+          <p class="fh-sub">Fill in your personal details to create your student profile.</p>
+
+          <div class="photo-up" onclick="document.getElementById('photo-in').click()">
+            <div class="photo-prev" id="photo-prev"><span id="photo-ph">📷</span><img id="photo-img" alt=""></div>
+            <div><div class="photo-lbl">Upload Profile Photo <span class="opt">Optional</span></div>
+            <div class="photo-sub">Click to select · JPG or PNG · max 2MB</div></div>
+          </div>
+          <input type="file" id="photo-in" accept="image/*" style="display:none" onchange="handlePhoto(this)">
+
+          <div class="fw">
+            <div class="fg"><label>First Name *</label>
+              <div class="wrap"><span class="wi">👤</span><input type="text" id="s-fn" placeholder=""></div>
+              <span class="ferr" id="fe-s-fn">Required</span>
+            </div>
+            <div class="fg"><label>Last Name *</label>
+              <div class="wrap"><span class="wi">👤</span><input type="text" id="s-ln" placeholder=""></div>
+              <span class="ferr" id="fe-s-ln">Required</span>
+            </div>
+          </div>
+
+          <div class="fw">
+            <div class="fg"><label>Date of Birth *</label>
+              <input type="date" id="s-dob">
+              <span class="ferr" id="fe-s-dob">Required</span>
+            </div>
+            <div class="fg"><label>Gender *</label>
+              <select id="s-gender">
+                <option value="">Select...</option>
+                <option>Male</option><option>Female</option><option>Prefer not to say</option>
+              </select>
+              <span class="ferr" id="fe-s-gender">Required</span>
+            </div>
+          </div>
+
+          <div class="fg"><label>National ID / Passport No. *</label>
+            <div class="wrap"><span class="wi">🪪</span><input type="text" id="s-nid" placeholder=""></div>
+            <span class="ferr" id="fe-s-nid">Required</span>
+          </div>
+
+          <div class="fw">
+            <div class="fg"><label>Phone Number *</label>
+              <div class="wrap"><span class="wi">📞</span><input type="tel" id="s-ph" placeholder=""></div>
+              <span class="ferr" id="fe-s-ph">Required</span>
+            </div>
+            <div class="fg"><label>Email Address *</label>
+              <div class="wrap"><span class="wi">✉</span><input type="email" id="s-em" placeholder=""></div>
+              <span class="ferr" id="fe-s-em">Valid email required</span>
+            </div>
+          </div>
+
+          <div class="fg"><label>Student ID *</label>
+            <div class="wrap"><span class="wi">🪪</span><input type="text" id="s-sid" placeholder=""></div>
+            <span class="ferr" id="fe-s-sid">Required</span>
+          </div>
+
+          <div class="fw">
+            <div class="fg"><label>Course / Programme *</label>
+              <div class="wrap"><span class="wi">📚</span><input type="text" id="s-course" placeholder=""></div>
+              <span class="ferr" id="fe-s-course">Required</span>
+            </div>
+            <div class="fg"><label>Year of Study *</label>
+              <select id="s-year">
+                <option value="">Select...</option>
+                <option>Year 1</option><option>Year 2</option><option>Year 3</option><option>Year 4</option><option>Postgraduate</option>
+              </select>
+              <span class="ferr" id="fe-s-year">Required</span>
+            </div>
+          </div>
+
+          <div class="fg"><label>Home County / Region <span class="opt">Optional</span></label>
+            <div class="wrap"><span class="wi">📍</span><input type="text" id="s-county" placeholder=""></div>
+          </div>
+
+          <div class="sdiv"><span>Emergency Contact</span></div>
+
+          <div class="fw">
+            <div class="fg"><label>Guardian / Parent Name *</label>
+              <div class="wrap"><span class="wi">👨‍👩‍👧</span><input type="text" id="s-gname" placeholder=""></div>
+              <span class="ferr" id="fe-s-gname">Required</span>
+            </div>
+            <div class="fg"><label>Guardian Phone *</label>
+              <div class="wrap"><span class="wi">📞</span><input type="tel" id="s-gph" placeholder=""></div>
+              <span class="ferr" id="fe-s-gph">Required</span>
+            </div>
+          </div>
+
+          <div class="fg"><label>Relationship to Guardian *</label>
+            <select id="s-grel">
+              <option value="">Select...</option>
+              <option>Parent</option><option>Sibling</option><option>Relative</option><option>Guardian</option><option>Spouse</option>
+            </select>
+            <span class="ferr" id="fe-s-grel">Required</span>
+          </div>
+
+          <button class="btn btn-p" onclick="s1Next()"><span class="bt">Continue to Hostel Preferences →</span><div class="sp"></div></button>
+          <div class="sw">Already registered? <span class="lk" onclick="go('login')">Sign in →</span></div>
+        </div>
+
+        <!-- ─ Step 2: Hostel Preference ─ -->
+        <div id="ss2" style="display:none">
+          <div class="eyebrow">Step 2 of 3 · Hostel Application</div>
+          <h2 class="fh">Choose Your Hostel</h2>
+          <p class="fh-sub">Select your preferred hostel and room preferences. Final allocation is by the administrator.</p>
+
+          <div class="fg"><label>Preferred Hostel *</label>
+            <div class="hc-grid" id="hc-grid">
+              <div class="hc sel" onclick="selHostel(this,'H-001')" data-h="H-001">
+                <div class="hci">🌅</div><div class="hcn">Sunrise House</div><div class="hct">Female · 60 rooms</div>
+              </div>
+              <div class="hc" onclick="selHostel(this,'H-002')" data-h="H-002">
+                <div class="hci">🌳</div><div class="hcn">Oakwood Block</div><div class="hct">Male · 80 rooms</div>
+              </div>
+              <div class="hc" onclick="selHostel(this,'H-003')" data-h="H-003">
+                <div class="hci">🤝</div><div class="hcn">Unity Hall</div><div class="hct">Mixed · 40 rooms</div>
+              </div>
+            </div>
+            <span class="ferr" id="fe-s-hostel" style="margin-top:6px">Please select a hostel preference.</span>
+          </div>
+
+          <div class="fw" style="margin-top:14px">
+            <div class="fg"><label>Room Type</label>
+              <select id="s-rtype">
+                <option value="">No preference</option>
+                <option>Single occupancy</option><option>Double sharing</option><option>Triple sharing</option>
+              </select>
+            </div>
+            <div class="fg"><label>Floor Preference</label>
+              <select id="s-floor">
+                <option value="">No preference</option>
+                <option>Ground floor</option><option>1st floor</option><option>2nd floor</option><option>3rd floor+</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="fg"><label>Intended Check-in Date <span class="opt">Optional</span></label>
+            <input type="date" id="s-cdate" style="padding:9px 12px">
+          </div>
+
+          <div class="fg"><label>Special Requirements <span class="opt">Optional</span></label>
+            <textarea id="s-special" placeholder="e.g. disability access, medical needs, dietary requirements, quiet room..."></textarea>
+          </div>
+
+          <div class="alert ai on" style="margin-bottom:16px"><span>ℹ</span><span>Room allocation is confirmed by the administrator after payment is verified.</span></div>
+
+          <div class="btn-row">
+            <button class="btn btn-g" onclick="goStep(1)"><span class="bt">← Back</span><div class="sp"></div></button>
+            <button class="btn btn-p" onclick="s2Next()"><span class="bt">Continue to Security →</span><div class="sp"></div></button>
+          </div>
+        </div>
+
+        <!-- ─ Step 3: Security ─ -->
+        <div id="ss3" style="display:none">
+          <div class="eyebrow">Step 3 of 3 · Account Security</div>
+          <h2 class="fh">Set Your Password</h2>
+          <p class="fh-sub">Create a strong password, review your details, and submit your application.</p>
+
+          <div class="alert ae" id="al-s3"><span>⚠</span><span id="al-s3-msg"></span></div>
+
+          <div class="fg"><label>Email (Sign-in Address) *</label>
+            <div class="wrap"><span class="wi">✉</span><input type="email" id="s-em2" placeholder=""></div>
+            <span class="ferr" id="fe-s-em2">Valid email required</span>
+          </div>
+
+          <div class="fg"><label>Password *</label>
+            <div class="wrap"><span class="wi">🔒</span>
+              <input type="password" id="s-pw" class="pw-f" placeholder="Min. 8 characters" oninput="chkStrength(this.value)">
+              <button class="pw-btn" onclick="togglePw('s-pw',this)" type="button">👁</button>
+            </div>
+            <div class="sb" id="s-sb"><div class="sf" id="s-sf"></div></div>
+            <div class="st" id="s-st"></div>
+            <span class="ferr" id="fe-s-pw">Minimum 8 characters required</span>
+          </div>
+
+          <div class="fg"><label>Confirm Password *</label>
+            <div class="wrap"><span class="wi">🔒</span>
+              <input type="password" id="s-pw2" class="pw-f" placeholder="">
+              <button class="pw-btn" onclick="togglePw('s-pw2',this)" type="button">👁</button>
+            </div>
+            <span class="ferr" id="fe-s-pw2">Passwords do not match</span>
+          </div>
+
+          <div class="sdiv"><span>Review Your Application</span></div>
+          <div class="sum-card" id="reg-sum"></div>
+
+          <div class="cbg" style="margin-top:12px">
+            <input type="checkbox" id="s-terms">
+            <label for="s-terms">I confirm all information is accurate and I agree to the HavenMS <span class="lk">Terms of Service</span> and <span class="lk">Privacy Policy</span>.</label>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-g" onclick="goStep(2)"><span class="bt">← Back</span><div class="sp"></div></button>
+            <button class="btn btn-p" id="btn-sreg" onclick="doSReg()"><span class="bt">Submit Application ✓</span><div class="sp"></div></button>
+          </div>
+        </div>
+
+        <!-- ─ Success ─ -->
+        <div id="ss-done" style="display:none">
+          <div class="suc-block">
+            <div class="suc-ring">✓</div>
+            <h3>Application Submitted!</h3>
+            <p>Your student account is created and your hostel application is <strong>pending review</strong> by the administrator.</p>
+            <div class="sum-card" id="suc-sum"></div>
+            <p style="margin-top:12px;font-size:13px;color:var(--ink-muted)">A confirmation will be sent to <strong id="suc-email"></strong> once your room is allocated.</p>
+            <button class="btn btn-p" style="margin-top:24px" onclick="go('login')"><span class="bt">Go to Sign In →</span><div class="sp"></div></button>
+          </div>
+        </div>
+
+      </div><!-- /panel-sreg -->
+
+
+      <!-- ════ STAFF REGISTRATION ════ -->
+      <div class="panel-sw" id="panel-staffreg">
+        <div class="eyebrow">Staff Registration</div>
+        <h2 class="fh">Create Staff Account</h2>
+        <p class="fh-sub">Register as an administrator, finance officer, or cleaner.</p>
+
+        <div class="alert ae" id="staff-alert"><span>⚠</span><span id="staff-alert-msg"></span></div>
+
+        <div class="fg"><label>Role *</label>
+          <select id="st-role">
+            <option value="">Select your role...</option>
+            <option value="admin">⚙️ Administrator</option>
+            <option value="finance">💳 Finance Officer</option>
+            <option value="cleaner">🧹 Cleaner</option>
+          </select>
+          <span class="ferr" id="fe-st-role">Please select a role</span>
+        </div>
+
+        <div class="fw">
+          <div class="fg"><label>First Name *</label>
+            <div class="wrap"><span class="wi">👤</span><input type="text" id="st-fn" placeholder="First name"></div>
+            <span class="ferr" id="fe-st-fn">Required</span>
+          </div>
+          <div class="fg"><label>Last Name *</label>
+            <div class="wrap"><span class="wi">👤</span><input type="text" id="st-ln" placeholder="Last name"></div>
+            <span class="ferr" id="fe-st-ln">Required</span>
+          </div>
+        </div>
+
+        <div class="fg"><label>Staff / Employee ID *</label>
+          <div class="wrap"><span class="wi">🪪</span><input type="text" id="st-eid" placeholder="e.g. EMP-001"></div>
+          <span class="ferr" id="fe-st-eid">Required</span>
+        </div>
+
+        <div class="fw">
+          <div class="fg"><label>Email Address *</label>
+            <div class="wrap"><span class="wi">✉</span><input type="email" id="st-em" placeholder="staff@uni.ac.ke"></div>
+            <span class="ferr" id="fe-st-em">Valid email required</span>
+          </div>
+          <div class="fg"><label>Phone Number <span class="opt">Optional</span></label>
+            <div class="wrap"><span class="wi">📞</span><input type="tel" id="st-ph" placeholder="+254 7xx xxx xxx"></div>
+          </div>
+        </div>
+
+        <div class="fg"><label>Password *</label>
+          <div class="wrap"><span class="wi">🔒</span>
+            <input type="password" id="st-pw" class="pw-f" placeholder="Min. 8 characters">
+            <button class="pw-btn" onclick="togglePw('st-pw',this)" type="button">👁</button>
+          </div>
+          <span class="ferr" id="fe-st-pw">Min. 8 characters required</span>
+        </div>
+
+        <div class="fg"><label>Confirm Password *</label>
+          <div class="wrap"><span class="wi">🔒</span>
+            <input type="password" id="st-pw2" class="pw-f" placeholder="Repeat password">
+            <button class="pw-btn" onclick="togglePw('st-pw2',this)" type="button">👁</button>
+          </div>
+          <span class="ferr" id="fe-st-pw2">Passwords don't match</span>
+        </div>
+
+        <div class="cbg">
+          <input type="checkbox" id="st-terms">
+          <label for="st-terms">I agree to the <span class="lk">Terms of Service</span> and confirm I am an authorised staff member of this institution.</label>
+        </div>
+
+        <button class="btn btn-p" id="btn-staffreg" onclick="doStaffReg()">
+          <span class="bt">Create Staff Account →</span><div class="sp"></div>
+        </button>
+        <div class="sw">Already registered? <span class="lk" onclick="go('login')">Sign in →</span></div>
+        <div class="sw" style="margin-top:8px">Student? <span class="lk" onclick="go('sreg')">Register here →</span></div>
+      </div>
+
+
+      <!-- ════ FORGOT PASSWORD ════ -->
+      <div class="panel-sw" id="panel-forgot">
+        <div class="eyebrow">Password Reset</div>
+        <h2 class="fh">Forgot your password?</h2>
+        <p class="fh-sub">Enter your registered email to receive reset instructions.</p>
+        <div class="alert as" id="forgot-ok"><span>✓</span><span>Reset link sent! Check your inbox.</span></div>
+        <div class="fg"><label>Email Address</label>
+          <div class="wrap"><span class="wi">✉</span><input type="email" id="f-em" placeholder="you@university.ac.ke"></div>
+        </div>
+        <button class="btn btn-p" onclick="doForgot()"><span class="bt">Send Reset Link →</span><div class="sp"></div></button>
+        <div class="sw"><span class="lk" onclick="go('login')">← Back to Sign In</span></div>
+      </div>
+
+    </div><!-- /form-container -->
+  </div><!-- /right-panel -->
+</div><!-- /auth-wrapper -->
+
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+  // FIX 1: Declare loginRole as a proper variable (was used but never declared)
+  let loginRole = 'admin';
+
+  // FIX 3: Define HOSTEL_NAMES map (was referenced but never defined)
+  const HOSTEL_NAMES = {
+    'H-001': 'Sunrise House',
+    'H-002': 'Oakwood Block',
+    'H-003': 'Unity Hall'
+  };
+
+  // FIX 2: Define ACCOUNTS array (was referenced but never declared).
+  // NOTE: In a real app backed by PHP/DB you would remove the ACCOUNTS duplicate
+  // check on the client entirely and rely on the server's unique-email constraint.
+  // This client-side array only tracks accounts registered in the current session.
+  const ACCOUNTS = [];
+
+  let hostelPref = null;
+
+// ── PANEL NAV ──
+function go(name) {
+  document.querySelectorAll('.panel-sw').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('panel-' + name);
+  if (el) { el.classList.add('active'); document.querySelector('.right-panel').scrollTop = 0; }
+  clearErrs();
+}
+
+// ── LOGIN ──
+// FIX 6: setRole now shows/hides the register links based on selected role
+function setRole(role, el) {
+  loginRole = role;
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+
+  const swStudent = document.getElementById('sw-student');
+  const swStaff   = document.getElementById('sw-staff');
+  if (swStudent) swStudent.style.display = role === 'student' ? 'block' : 'none';
+  if (swStaff)   swStaff.style.display   = (role === 'admin' || role === 'finance' || role === 'cleaner') ? 'block' : 'none';
+}
+
+function doLogin() {
+  clearErrs();
+
+  const email = val('l-email');
+  const password = val('l-pw');
+
+  if (!email || !email.includes('@')) {
+    showFerr('fe-l-email'); return;
+  }
+  if (!password) {
+    showFerr('fe-l-pw'); return;
+  }
+
+  // FIX 7: Added .catch() for network errors
+  fetch("login.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&role=${encodeURIComponent(loginRole)}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === "success") {
+      sessionStorage.setItem("user", JSON.stringify(data.user));
+      toast("Welcome " + data.user.name + " 👋");
+
+      if (data.user.role === "student") {
+        window.location.href = "StudentPortal.html";
+      } else if (data.user.role === "admin") {
+        window.location.href = "admin_dashboard.html";
+      } else if (data.user.role === "finance") {
+        window.location.href = "FinancePortal.html";
+      } else if (data.user.role === "cleaner") {
+        window.location.href = "Overview.html";
+      }
+    } else {
+      showAlert('login-alert', 'login-alert-msg', data.message);
+    }
+  })
+  .catch(() => {
+    showAlert('login-alert', 'login-alert-msg', 'Network error. Please check your connection and try again.');
+  });
+}
+
+// ── STUDENT REGISTRATION STEPS ──
+let curStep = 1;
+function goStep(n) {
+  [1,2,3].forEach(i => { const el = document.getElementById('ss'+i); if(el) el.style.display = i===n?'block':'none'; });
+  document.getElementById('ss-done').style.display='none';
+  [1,2,3].forEach(i => {
+    const ps = document.getElementById('ps'+i), pl = document.getElementById('pl'+i);
+    if(ps){ps.classList.toggle('active',i===n); ps.classList.toggle('done',i<n);}
+    if(pl) pl.classList.toggle('done',i<n);
+  });
+  curStep = n;
+  document.querySelector('.right-panel').scrollTop = 0;
+  clearErrs();
+}
+
+function s1Next() {
+  let ok=true;
+  if(!val('s-fn')){showFerr('fe-s-fn');markErr('s-fn');ok=false;}
+  if(!val('s-ln')){showFerr('fe-s-ln');markErr('s-ln');ok=false;}
+  if(!val('s-dob')){showFerr('fe-s-dob');markErr('s-dob');ok=false;}
+  if(!val('s-gender')){showFerr('fe-s-gender');markErr('s-gender');ok=false;}
+  if(!val('s-nid')){showFerr('fe-s-nid');markErr('s-nid');ok=false;}
+  if(!val('s-ph')){showFerr('fe-s-ph');markErr('s-ph');ok=false;}
+  if(!val('s-em')||!val('s-em').includes('@')){showFerr('fe-s-em');markErr('s-em');ok=false;}
+  // FIX 4: Validate the fields that were missing from the original HTML
+  if(!val('s-sid')){showFerr('fe-s-sid');markErr('s-sid');ok=false;}
+  if(!val('s-course')){showFerr('fe-s-course');markErr('s-course');ok=false;}
+  if(!val('s-year')){showFerr('fe-s-year');markErr('s-year');ok=false;}
+  if(!val('s-gname')){showFerr('fe-s-gname');markErr('s-gname');ok=false;}
+  if(!val('s-gph')){showFerr('fe-s-gph');markErr('s-gph');ok=false;}
+  if(!val('s-grel')){showFerr('fe-s-grel');markErr('s-grel');ok=false;}
+  if(ok) goStep(2);
+}
+
+function s2Next() {
+  if(!hostelPref){showFerr('fe-s-hostel');return;}
+  gv('s-em2').value = val('s-em');
+  buildSummary();
+  goStep(3);
+}
+
+// FIX 5: Restructured doSReg so the success UI is shown inside the fetch .then(),
+// not immediately after the fetch call (which is async and returns before completing).
+function doSReg() {
+  clearErrs();
+  let ok=true;
+  const em = val('s-em2'), pw = val('s-pw'), pw2 = val('s-pw2');
+  if(!em||!em.includes('@')){showFerr('fe-s-em2');markErr('s-em2');ok=false;}
+  if(pw.length<8){showFerr('fe-s-pw');markErr('s-pw');ok=false;}
+  if(pw!==pw2){showFerr('fe-s-pw2');markErr('s-pw2');ok=false;}
+  if(!document.getElementById('s-terms').checked){
+    showAlert('al-s3','al-s3-msg','Please accept the Terms of Service to submit your application.');
+    ok=false;
+  }
+  if(ACCOUNTS.find(a=>a.email===em)){
+    showAlert('al-s3','al-s3-msg','An account with this email already exists. Please sign in instead.');
+    ok=false;
+  }
+  if(!ok) return;
+
+  withLoad('btn-sreg', () => {
+    const name = val('s-fn') + ' ' + val('s-ln');
+
+    // FIX 4 & 5: Corrected the fetch body (was broken across lines with whitespace),
+    // used encodeURIComponent on all values, and moved the success UI into .then().
+    fetch("register_student.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: [
+        `name=${encodeURIComponent(name)}`,
+        `email=${encodeURIComponent(val('s-em'))}`,
+        `password=${encodeURIComponent(val('s-pw'))}`,
+        `student_id=${encodeURIComponent(val('s-sid'))}`,
+        `course=${encodeURIComponent(val('s-course'))}`,
+        `year=${encodeURIComponent(val('s-year'))}`,
+        `gender=${encodeURIComponent(val('s-gender'))}`,
+        `hostel=${encodeURIComponent(hostelPref)}`
+      ].join('&')
+    })
+    .then(res => res.text())
+    .then(() => {
+      // Success UI — now correctly inside the async callback
+      ACCOUNTS.push({ email: em, role: 'student', name });
+
+      document.getElementById('suc-email').textContent = em;
+      document.getElementById('suc-sum').innerHTML = `
+        <div class="sum-row"><span class="sum-k">Name</span><span class="sum-v">${name}</span></div>
+        <div class="sum-row"><span class="sum-k">Student ID</span><span class="sum-v">${val('s-sid')}</span></div>
+        <div class="sum-row"><span class="sum-k">Course</span><span class="sum-v">${val('s-course')}, ${val('s-year')}</span></div>
+        <div class="sum-row"><span class="sum-k">Hostel Applied</span><span class="sum-v">${HOSTEL_NAMES[hostelPref]}</span></div>
+        <div class="sum-row"><span class="sum-k">Application Status</span><span class="sum-v" style="color:var(--warn)">⏳ Pending Review</span></div>`;
+
+      [1,2,3].forEach(i=>{
+        const ps=document.getElementById('ps'+i), pl=document.getElementById('pl'+i);
+        if(ps){ps.classList.remove('active');ps.classList.add('done');}
+        if(pl) pl.classList.add('done');
+      });
+      ['ss1','ss2','ss3'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+      document.getElementById('ss-done').style.display='block';
+      document.querySelector('.right-panel').scrollTop=0;
+      toast('Account created for ' + val('s-fn') + '! 🎉');
+    })
+    .catch(() => {
+      showAlert('al-s3','al-s3-msg','Network error. Please check your connection and try again.');
+    });
+  });
+}
+
+function selHostel(el, id) {
+  document.querySelectorAll('.hc').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  hostelPref = id;
+  document.getElementById('fe-s-hostel').classList.remove('show');
+}
+
+function buildSummary() {
+  document.getElementById('reg-sum').innerHTML = `
+    <div class="sum-row"><span class="sum-k">Name</span><span class="sum-v">${val('s-fn')} ${val('s-ln')}</span></div>
+    <div class="sum-row"><span class="sum-k">Student ID</span><span class="sum-v">${val('s-sid')}</span></div>
+    <div class="sum-row"><span class="sum-k">Course</span><span class="sum-v">${val('s-course')}</span></div>
+    <div class="sum-row"><span class="sum-k">Year</span><span class="sum-v">${val('s-year')}</span></div>
+    <div class="sum-row"><span class="sum-k">Gender</span><span class="sum-v">${val('s-gender')}</span></div>
+    <div class="sum-row"><span class="sum-k">Hostel Preference</span><span class="sum-v">${HOSTEL_NAMES[hostelPref]||'—'}</span></div>
+    <div class="sum-row"><span class="sum-k">Email</span><span class="sum-v">${val('s-em')}</span></div>`;
+}
+
+// ── STAFF REGISTRATION ──
+function doStaffReg() {
+  clearErrs();
+  let ok=true;
+  if(!val('st-role')){showFerr('fe-st-role');markErr('st-role');ok=false;}
+  if(!val('st-fn')){showFerr('fe-st-fn');markErr('st-fn');ok=false;}
+  if(!val('st-ln')){showFerr('fe-st-ln');markErr('st-ln');ok=false;}
+  if(!val('st-eid')){showFerr('fe-st-eid');markErr('st-eid');ok=false;}
+  if(!val('st-em')||!val('st-em').includes('@')){showFerr('fe-st-em');markErr('st-em');ok=false;}
+  if(val('st-pw').length<8){showFerr('fe-st-pw');markErr('st-pw');ok=false;}
+  if(val('st-pw')!==val('st-pw2')){showFerr('fe-st-pw2');markErr('st-pw2');ok=false;}
+  if(!document.getElementById('st-terms').checked){showAlert('staff-alert','staff-alert-msg','Please accept the Terms of Service.');ok=false;}
+  if(ACCOUNTS.find(a=>a.email===val('st-em'))){showAlert('staff-alert','staff-alert-msg','An account with this email already exists.');ok=false;}
+  if(!ok) return;
+  withLoad('btn-staffreg', () => {
+    ACCOUNTS.push({email:val('st-em'),password:val('st-pw'),role:val('st-role'),name:val('st-fn')+' '+val('st-ln')});
+    toast('Staff account created for ' + val('st-fn') + '! ✓');
+    setTimeout(()=>go('login'),900);
+  });
+}
+
+// ── FORGOT PASSWORD ──
+function doForgot() {
+  const em = val('f-em');
+  if(!em.includes('@')){toast('Enter a valid email address.','error');return;}
+  document.getElementById('forgot-ok').classList.add('on');
+  toast('Password reset link sent to ' + em);
+}
+
+// ── PASSWORD STRENGTH ──
+function chkStrength(v) {
+  const bar=document.getElementById('s-sb'),fill=document.getElementById('s-sf'),txt=document.getElementById('s-st');
+  bar.style.display=v.length?'block':'none';
+  let sc=0;
+  if(v.length>=8)sc++;if(/[A-Z]/.test(v))sc++;if(/[0-9]/.test(v))sc++;if(/[^A-Za-z0-9]/.test(v))sc++;
+  const cfgs=[{w:'20%',c:'var(--danger)',l:'Very weak'},{w:'40%',c:'#e67700',l:'Weak'},{w:'65%',c:'#f59f00',l:'Fair'},{w:'85%',c:'var(--success)',l:'Strong'},{w:'100%',c:'#1a7431',l:'Very strong'}];
+  const c=cfgs[sc]||cfgs[0];
+  fill.style.width=c.w;fill.style.background=c.c;txt.textContent=c.l;txt.style.color=c.c;
+}
+
+// ── PHOTO UPLOAD ──
+function handlePhoto(input) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img=document.getElementById('photo-img'),ph=document.getElementById('photo-ph');
+    img.src=e.target.result;img.style.display='block';ph.style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── UTILS ──
+function gv(id){return document.getElementById(id);}
+function val(id){const el=gv(id);return el?el.value.trim():'';}
+function showFerr(id){const el=gv(id);if(el)el.classList.add('show');}
+function markErr(id){const el=gv(id);if(el)el.classList.add('err');}
+function showAlert(aId,mId,msg){const a=gv(aId),m=gv(mId);if(a)a.classList.add('on');if(m)m.textContent=msg;}
+function clearErrs(){
+  document.querySelectorAll('.ferr').forEach(e=>e.classList.remove('show'));
+  document.querySelectorAll('input,select').forEach(i=>i.classList.remove('err'));
+  document.querySelectorAll('.alert').forEach(a=>a.classList.remove('on'));
+}
+function togglePw(id,btn){const el=gv(id);if(!el)return;el.type=el.type==='password'?'text':'password';btn.textContent=el.type==='password'?'👁':'🙈';}
+function withLoad(btnId,fn){const btn=gv(btnId);if(!btn){fn();return;}btn.classList.add('loading');setTimeout(()=>{btn.classList.remove('loading');fn();},900);}
+function toast(msg,type='success'){const el=document.createElement('div');el.className='toast '+type;el.innerHTML=(type==='success'?'✓':'⚠')+' '+msg;gv('toasts').appendChild(el);setTimeout(()=>el.remove(),3600);}
+
+// ── ENTER KEY ──
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  const active=document.querySelector('.panel-sw.active');
+  if(!active)return;
+  if(active.id==='panel-login')doLogin();
+  else if(active.id==='panel-forgot')doForgot();
+  else if(active.id==='panel-staffreg')doStaffReg();
+  else if(active.id==='panel-sreg'){
+    if(curStep===1)s1Next();
+    else if(curStep===2)s2Next();
+    else if(curStep===3)doSReg();
+  }
+});
+
+// Default check-in date
+const ci=gv('s-cdate');if(ci)ci.value=new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
